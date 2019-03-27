@@ -118,8 +118,8 @@ int main(int argc, char *argv[])
     window = SDL_CreateWindow("Game Window",                     // window title
                               SDL_WINDOWPOS_UNDEFINED,           // initial x position
                               SDL_WINDOWPOS_UNDEFINED,           // initial y position
-                              840,                               // width, in pixels
-                              700,                               // height, in pixels
+                              1000,                               // width, in pixels
+                              800,                               // height, in pixels
                               0                                  // flags
                               );
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
