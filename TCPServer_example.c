@@ -13,7 +13,7 @@
 
 int main(int argc, const char * argv[]) {
     // insert code here...
-    printf("Hello");
+    printf("Hello\n");
     SDL_Init(SDL_INIT_EVERYTHING);
     SDLNet_Init();
     
@@ -23,20 +23,24 @@ int main(int argc, const char * argv[]) {
     
     // tcp connection
     TCPsocket server = SDLNet_TCP_Open(&ip);
-    TCPsocket client;
-    
+    TCPsocket client[3];
+    int i=0;
     const char* text = "SMF Ricardo";
     char sendtext[100];
     while (1) {
-        client = SDLNet_TCP_Accept(server);
-        while (client) {
+        client[i] = SDLNet_TCP_Accept(server);
+        while (client[i]) {
             // communicate w client
-            SDLNet_TCP_Send(client, text, strlen(text));
-            SDLNet_TCP_Recv(client, sendtext, 100);
-            printf("%s", sendtext);
+            SDLNet_TCP_Send(client[i], text, strlen(text));
+            SDLNet_TCP_Recv(client[i], sendtext, 100);
+            printf("client %d says: %s", i, sendtext);
             
-            //SDLNet_TCP_Close(client);
-            //break;
+            SDLNet_TCP_Close(client[i]);
+            i++;
+            if(i==3){
+                i=0;
+            }
+            break;
         }
     }
     SDLNet_TCP_Close(server);
