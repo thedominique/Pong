@@ -17,18 +17,22 @@ int main(int argc, const char * argv[]) {
     SDLNet_Init();
     
     IPaddress ip;
+
     //char adress[]="www.google.com";
-    SDLNet_ResolveHost(&ip, "130.229.163.141", 1234); // server ip adress
+    SDLNet_ResolveHost(&ip, "130.229.149.121", 1234); // server ip adress
     
     // tcp connection
     const char* sendtext = "Jag vill ha en cheese burgare\n";
     TCPsocket client = SDLNet_TCP_Open(&ip);
-    TCPsocket server;
+    //TCPsocket server = SDLNet_TCP_Open(&remote_ip);
+    
+    //IPaddress *remote_ip;
+    
     char text[100];
     SDLNet_TCP_Recv(client, text, 100);
-    SDLNET_TCP_Send(server, sendtext, strlen(sendtext)+1);
+    //remote_ip = SDLNet_TCP_GetPeerAddress(server);
+    SDLNet_TCP_Send(client, sendtext, strlen(sendtext));
     printf("%s",text);
-    
     
     
     SDLNet_TCP_Close(client);
