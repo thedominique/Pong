@@ -140,21 +140,21 @@ int main(int argc, char *argv[])
 	man.x = 0;
 	man.y = WINDOW_HEIGHT/2 -PADDLE_HEIGHT/2;
 
-	man.w = WINDOW_WIDTH;
-	man.h = WINDOW_HEIGHT;
+	man.w = 40;
+	man.h = 200;
 
 	man2.x = WINDOW_WIDTH - PADDLE_WIDTH;
 	man2.y = WINDOW_HEIGHT / 2 - PADDLE_HEIGHT / 2;;
 
-	man2.w = WINDOW_WIDTH;
-	man2.h = WINDOW_WIDTH;
+	man2.w = 40;
+	man2.h = 200;
 
 	ball.x = WINDOW_WIDTH / 2;
 	ball.y = WINDOW_HEIGHT / 2;
 	ball.h = 20;
 	ball.w = 20;
-	ball.xVel = X_BALL_VEL;
-	ball.yVel = Y_BALL_VEL;
+	ball.xVel = 2;
+	ball.yVel = 2;
 	
 
 	//Create an application window with the following settings:
