@@ -19,7 +19,7 @@ typedef struct
 
 
 
-int processEvents(SDL_Window *window, Paddle *paddle, Paddle *paddle2, Paddle *ball)
+int processEvents(SDL_Window *window, Paddle *left_paddle, Paddle *right_paddle, Paddle *ball)
 {
 	SDL_Event event;
 	int done = 0;
@@ -56,23 +56,23 @@ int processEvents(SDL_Window *window, Paddle *paddle, Paddle *paddle2, Paddle *b
 		}
 	}
 
-	//DETECT KEYS (UP, DOWN, LEFT RIGHT)
+	//DETECT KEYS (UP, DOWN, LEFT, RIGHT)
 	const Uint8 *state = SDL_GetKeyboardState(NULL);
-	if (state[SDL_SCANCODE_UP] && paddle->y>0)
+	if (state[SDL_SCANCODE_W] && left_paddle->y>0)
 	{
-		paddle->y -= 20;
+		left_paddle->y -= 20;
 	}
-	if (state[SDL_SCANCODE_DOWN] && paddle->y < WINDOW_HEIGHT- paddle->h)
+	if (state[SDL_SCANCODE_S] && left_paddle->y < WINDOW_HEIGHT- left_paddle->h)
 	{
-		paddle->y += 20;
+		left_paddle->y += 20;
 	}
-	if (state[SDL_SCANCODE_W] && paddle2->y>0)
+	if (state[SDL_SCANCODE_UP] && right_paddle->y>0)
 	{
-		paddle2->y -= 20;
+		right_paddle->y -= 20;
 	}
-	if (state[SDL_SCANCODE_S] && paddle2->y < WINDOW_HEIGHT - paddle2->h)
+	if (state[SDL_SCANCODE_DOWN] && right_paddle->y < WINDOW_HEIGHT - right_paddle->h)
 	{
-		paddle2->y += 20;
+		right_paddle->y += 20;
 	}
 
 	//collusion with window
@@ -92,14 +92,19 @@ int processEvents(SDL_Window *window, Paddle *paddle, Paddle *paddle2, Paddle *b
 	{
 		ball->xVel = -ball->xVel;
 	}
-	if (collision_check(ball, paddle))
+
+
+	//collision with padddelz
+	if (collision_check(ball, left_paddle))
 	{
 		ball->xVel = -ball->xVel;
 	}
-	if (collision_check(ball, paddle2))
+	if (collision_check(ball, right_paddle))
 	{
 		ball->xVel = -ball->xVel;
 	}
+
+	//update position
 	ball->x = ball->x + ball->xVel;
 	ball->y = (ball->y) + (ball->yVel);
 
@@ -131,7 +136,7 @@ int collision_check(Paddle *ball, Paddle *paddle)
 		
 }
 
-void doRender(SDL_Renderer *renderer, Paddle *paddle, Paddle *paddle2, Paddle *ball)
+void doRender(SDL_Renderer *renderer, Paddle *left_paddle, Paddle *right_paddle, Paddle *ball)
 {
 	//set the drawing color to blue
 	SDL_SetRenderDrawColor(renderer, 0, 0, 40, 255);
@@ -142,12 +147,12 @@ void doRender(SDL_Renderer *renderer, Paddle *paddle, Paddle *paddle2, Paddle *b
 	//set the drawing color to white
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
-	SDL_Rect rect = { paddle->x,paddle->y, PADDLE_WIDTH , PADDLE_HEIGHT };
+	SDL_Rect rect = { left_paddle->x,left_paddle->y, PADDLE_WIDTH , PADDLE_HEIGHT };
 	SDL_RenderFillRect(renderer, &rect);
 
 	//We are done drawing, "present" or show to the screen what we've drawn
 
-	SDL_Rect rect2 = { paddle2->x, paddle2->y, PADDLE_WIDTH , PADDLE_HEIGHT };
+	SDL_Rect rect2 = { right_paddle->x, right_paddle->y, PADDLE_WIDTH , PADDLE_HEIGHT };
 	SDL_RenderFillRect(renderer, &rect2);
 
 	SDL_Rect rect3 = {ball->x,ball->y,20,20 };
@@ -167,18 +172,18 @@ int main(int argc, char *argv[])
 
 	SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
 
-	Paddle paddle, paddle2,ball;
-	paddle.x = 0;
-	paddle.y = WINDOW_HEIGHT/2 -PADDLE_HEIGHT/2;
+	Paddle left_paddle, right_paddle,ball;
+	left_paddle.x = 0;
+	left_paddle.y = WINDOW_HEIGHT/2 -PADDLE_HEIGHT/2;
 
-	paddle.w = 40;
-	paddle.h = 200;
+	left_paddle.w = 40;
+	left_paddle.h = 200;
 
-	paddle2.x = WINDOW_WIDTH - PADDLE_WIDTH;
-	paddle2.y = WINDOW_HEIGHT / 2 - PADDLE_HEIGHT / 2;;
+	right_paddle.x = WINDOW_WIDTH - PADDLE_WIDTH;
+	right_paddle.y = WINDOW_HEIGHT / 2 - PADDLE_HEIGHT / 2;;
 
-	paddle2.w = 50;
-	paddle2.h = 200;
+	right_paddle.w = 50;
+	right_paddle.h = 200;
 
 	ball.x = WINDOW_WIDTH / 2;
 	ball.y = WINDOW_HEIGHT / 2;
@@ -207,10 +212,10 @@ int main(int argc, char *argv[])
 	while (!done)
 	{
 		//Check for events
-		done = processEvents(window, &paddle, &paddle2,&ball);
+		done = processEvents(window, &left_paddle, &right_paddle,&ball);
 
 		//Render display
-		doRender(renderer, &paddle, &paddle2,&ball);
+		doRender(renderer, &left_paddle, &right_paddle,&ball);
 
 		//don't burn up the CPU
 		SDL_Delay(1000/60);
