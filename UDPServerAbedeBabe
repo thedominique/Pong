@@ -7,9 +7,10 @@
 int main(int argc, char** argv[])
 {
 	IPaddress server_ip;
+	IPaddress client_ip;
 	UDPsocket serversock;
 	UDPpacket *packet;
-	int receivepack;
+	char choice[10];
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDLNet_Init();
 
@@ -23,10 +24,38 @@ int main(int argc, char** argv[])
 	packet = SDLNet_AllocPacket(1024);
 	while (1)
 	{
-		if (SDLNet_UDP_Recv(serversock, packet))
+		printf("skicka eller ta emot?\n");
+		gets(choice);
+		if (!strcmp(choice, "skicka"))
 		{
-			printf("Du har fått ett paket\n");
+			printf("Fill the buffer\n>");
+			gets((char *)packet->data);
+
+			packet->address.host = client_ip.host;	// Set the destination host
+			packet->address.port = client_ip.port;	// And destination port
+
+			packet->len = strlen((char *)packet->data) + 1;
+			SDLNet_UDP_Send(serversock, -1, packet); // This sets the p->channel
+
+			// Quit if packet contains "quit"
+			if (!strcmp((char *)packet->data, "quit"))
+				return;
 		}
+		else if (!strcmp(choice, "ta emot"))
+		{
+			if(SDLNet_UDP_Recv(serversock, packet))
+			{
+				printf("Du har fått ett paket som säkert innehåller något bra\n");
+				client_ip.host = packet->address.host;
+				client_ip.port = packet->address.port;
+			}
+
+		}
+		else
+		{
+			printf("NOT A VALID ASS DUDE\n");
+		}
+			
 	}
 	SDLNet_FreePacket(packet);
 	SDLNet_UDP_Close(serversock);
