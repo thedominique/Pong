@@ -4,6 +4,23 @@
 #include <string.h>
 #include <stdbool.h>
 
+#define SCREEN_W 1000
+#define SCREEN_H 500
+#define BALL_SPEED 5
+#define PLAYER_SPEED 5
+
+typedef struct player {
+	float player_yPos;
+	float player_xPos;
+} Player;
+
+typedef struct ball {
+	float ball_yPos;
+	float ball_xPos;
+} Ball;
+
+void game_Loop(IPaddress  );
+
 int main(int argc, char** argv[])
 {
 	IPaddress server_ip;
@@ -11,6 +28,7 @@ int main(int argc, char** argv[])
 	UDPsocket serversock;
 	UDPpacket *packet;
 	char choice[10];
+
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDLNet_Init();
 
@@ -22,6 +40,25 @@ int main(int argc, char** argv[])
 		exit(2);
 	}
 	packet = SDLNet_AllocPacket(1024);
+
+	SDL_Window* window = SDL_CreateWindow(
+		"Ultra pong",
+		SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED,
+		SCREEN_W,
+		SCREEN_H,
+		0);
+
+	if (!window) {
+		printf("Could not create window: %s\n", SDL_GetError());
+		return 1;
+	}
+
+	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	if (!renderer) {
+		printf("Could not create renderer: %s\n", SDL_GetError());
+		return 1;
+	}
 	while (1)
 	{
 		printf("skicka eller ta emot?\n");
@@ -43,7 +80,7 @@ int main(int argc, char** argv[])
 		}
 		else if (!strcmp(choice, "ta emot"))
 		{
-			if(SDLNet_UDP_Recv(serversock, packet))
+			if (SDLNet_UDP_Recv(serversock, packet))
 			{
 				printf("Du har fått ett paket som säkert innehåller något bra\n");
 				client_ip.host = packet->address.host;
@@ -55,12 +92,20 @@ int main(int argc, char** argv[])
 		{
 			printf("NOT A VALID ASS DUDE\n");
 		}
-			
+
 	}
+
+	game_Loop();
+
 	SDLNet_FreePacket(packet);
 	SDLNet_UDP_Close(serversock);
 	SDLNet_Quit();
 	SDL_Quit();
 
 	return 0;
+}
+
+void game_Loop(){
+	Player players[2];
+
 }
