@@ -12,17 +12,18 @@ exit
 #define BALL_WIDTH	20
 #define BALL_HEIGHT	20
 #define BALL_SPEED 0.5
-#define NET_TICK_RATE 20
 
 
 #define SCREEN_W  1000
 #define SCREEN_H  500
 
-float PADDLE_SPEED_X = 10;
-float PADDLE_SPEED_Y = 10;
+float NET_TICK_RATE = 30;
+float PADDLE_SPEED_X = 100;
+float PADDLE_SPEED_Y = 100;
 float BALL_INIT_X0 = SCREEN_W / 2;
 float BALL_INIT_Y0 = SCREEN_H / 2;
 float PADDLE_INIT_Y0 = 0;
+
 const double PAD_WIDTH = 20;
 const double PAD_HEIGHT = 100;
 const double PAD_PAD = 0.02;
@@ -63,7 +64,7 @@ int main(int argc, char **argv)
 	}
 
 	/* Resolve server name  */
-	SDLNet_ResolveHost(&ipaddress, "192.168.1.150", 1234);
+	SDLNet_ResolveHost(&ipaddress, "130.229.152.31", 1234); // initiera packet för servern
 
 	SDL_Window* window = SDL_CreateWindow(
 		"Ultra pong",
@@ -91,8 +92,6 @@ int main(int argc, char **argv)
 }
 
 void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress server_addr, SDL_Window* window) {
-	client_packet_t client_packet;
-	UDPpacket* packet;
 	int which_player = 0;
 	float quit, p1_posX0 = 0, p1_posY0 = PADDLE_INIT_Y0, p_posY = 0, p_posX = 0;
 	float p2_posX0 = SCREEN_W, p2_posY0 = SCREEN_H;
@@ -109,12 +108,13 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 	long net_tick_interval = (1 / NET_TICK_RATE) * ticks_per_sec;
 
 	/* Allocate memory for the packet */
-	packet = SDLNet_AllocPacket(512);
 
 	/* Main loop */
 	quit = 1;
 	while (quit)
 	{
+		UDPpacket* packet;
+		packet = SDLNet_AllocPacket(512);
 		long tick_t1 = SDL_GetPerformanceCounter();
 		double dt = (tick_t1 - tick_t0) / (double)ticks_per_sec;
 
@@ -161,22 +161,21 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 			printf("%f %f\n", p_posX1, p_posY1);
 			printf("Player %d\n", which_player);
 
-			if (buttonPress)
+			if (which_player == 1)
 			{
-				if (which_player == 1)
-				{
-					p1_posX0 += p_posX1;
-					p1_posY0 += p_posY1;
-				}
-				else if (which_player == 2)
-				{
-					p2_posX0 += p_posX1;
-					p2_posY0 += p_posY1;
-				}
-				else if (which_player == 3)
-				{
-					printf("Hej\n");
-				}
+				p1_posX0 += p_posX1;
+				p1_posY0 += p_posY1;
+				printf("Player 1 move!\n");
+			}
+			else if (which_player == 2)
+			{
+				p2_posX0 += p_posX1;
+				p2_posY0 += p_posY1;
+				printf("Player 2 move!\n");
+			}
+			else if (which_player == 3)
+			{
+				printf("Hej\n");
 			}
 		}
 
@@ -189,13 +188,13 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 		}
 		if (state[SDL_SCANCODE_S] && p_posY < SCREEN_H - PAD_HEIGHT)
 		{
-			p_posY +=PADDLE_SPEED_Y * dt;
+			p_posY += PADDLE_SPEED_Y * dt;
 			//printf("HEHE");
 			//printf("%f\n", p_posY);
 		}
 		if (state[SDL_SCANCODE_A] && p_posX > 0)
 		{
-			p_posX -=PADDLE_SPEED_X * dt;
+			p_posX -= PADDLE_SPEED_X * dt;
 			//printf("HEHE");
 			//printf("%f\n", p_posY);
 		}
@@ -209,17 +208,19 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 
 		if (tick_t1 >= next_net_tick)
 		{
+			client_packet_t client_packet;
 			client_packet.p_yPos = p_posY;
 			client_packet.p_xPos = p_posX;
 			client_packet.which_player = which_player;
-			
+
+			UDPpacket packet;
 			//printf("WEEE%f\n", client_packet.p_yPos);
-			packet->data = (void*)&client_packet;
-			packet->address = server_addr;
-			packet->channel = -1;
-			packet->len = sizeof(client_packet);
-			packet->maxlen = packet->len;
-			SDLNet_UDP_Send(*clientsock, -1, packet);
+			packet.data = (void*)&client_packet;
+			packet.address = server_addr;
+			packet.channel = -1;
+			packet.len = sizeof(client_packet);
+			packet.maxlen = packet.len;
+			SDLNet_UDP_Send(*clientsock, -1, &packet);
 			//printf("Sent!\n");
 			next_net_tick += net_tick_interval;
 		}
@@ -236,7 +237,7 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 
 		// Draw pad 2.
 		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-		SDL_Rect fillRect2 = { p2_posX0 - PAD_WIDTH + p_posX1, p2_posY0 - PAD_HEIGHT + p_posY1, PAD_WIDTH, PAD_HEIGHT };
+		SDL_Rect fillRect2 = { (p2_posX0 - PAD_WIDTH - 5) + p_posX1, (p2_posY0 - PAD_HEIGHT - 5) + p_posY1, PAD_WIDTH, PAD_HEIGHT };
 		SDL_RenderFillRect(renderer, &fillRect2);
 
 		// Draw ball.
@@ -246,7 +247,7 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 
 		tick_t0 = tick_t1;
 		SDL_RenderPresent(renderer);
+		//SDLNet_FreePacket(&packet);
 	}
-	SDLNet_FreePacket(&packet);
 	return;
 }
