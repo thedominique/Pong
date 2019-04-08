@@ -37,8 +37,13 @@ typedef struct client_packet
 	float p_yPos;
 	float p_xPos;
 	int which_player;
-	SDL_bool press;
 } client_packet_t;
+
+typedef struct players
+{
+	float yPos;
+	float xPos;
+}Players;
 
 void game_Logic(SDL_Renderer* renderer, UDPsocket* udpsock, IPaddress server_addr, SDL_Window* window);
 
@@ -100,6 +105,8 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 	float pad2_y = 0;
 	SDL_Event event;
 	SDL_bool buttonPress = SDL_FALSE;
+	UDPpacket* packet;
+	Players player[3] = { 0,0,0 };
 
 	long ticks_per_sec = SDL_GetPerformanceFrequency();
 	long tick_t0 = SDL_GetPerformanceCounter();
@@ -108,13 +115,11 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 	long net_tick_interval = (1 / NET_TICK_RATE) * ticks_per_sec;
 
 	/* Allocate memory for the packet */
-
+	packet = SDLNet_AllocPacket(512);
 	/* Main loop */
 	quit = 1;
 	while (quit)
 	{
-		UDPpacket* packet;
-		packet = SDLNet_AllocPacket(512);
 		long tick_t1 = SDL_GetPerformanceCounter();
 		double dt = (tick_t1 - tick_t0) / (double)ticks_per_sec;
 
@@ -161,16 +166,16 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 			printf("%f %f\n", p_posX1, p_posY1);
 			printf("Player %d\n", which_player);
 
-			if (which_player == 1)
+			if (which_player == 0)
 			{
-				p1_posX0 += p_posX1;
-				p1_posY0 += p_posY1;
+				player[0].xPos += p_posX1;
+				player[0].yPos += p_posY1;
 				printf("Player 1 move!\n");
 			}
-			else if (which_player == 2)
+			else if (which_player == 1)
 			{
-				p2_posX0 += p_posX1;
-				p2_posY0 += p_posY1;
+				player[1].xPos += p_posX1;
+				player[1].yPos += p_posY1;
 				printf("Player 2 move!\n");
 			}
 			else if (which_player == 3)
@@ -232,12 +237,12 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 		SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
 		// Draw pad 1.
-		SDL_Rect fillRect = { p1_posX0 + p_posX1, p1_posY0 + p_posY1, PAD_WIDTH, PAD_HEIGHT };
+		SDL_Rect fillRect = { p1_posX0 + player[0].xPos , p1_posY0 + player[0].yPos, PAD_WIDTH, PAD_HEIGHT };
 		SDL_RenderFillRect(renderer, &fillRect);
 
 		// Draw pad 2.
 		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-		SDL_Rect fillRect2 = { (p2_posX0 - PAD_WIDTH - 5) + p_posX1, (p2_posY0 - PAD_HEIGHT - 5) + p_posY1, PAD_WIDTH, PAD_HEIGHT };
+		SDL_Rect fillRect2 = { (p2_posX0 - PAD_WIDTH - 5) + player[1].xPos, (p2_posY0 - PAD_HEIGHT - 5) + player[1].yPos, PAD_WIDTH, PAD_HEIGHT };
 		SDL_RenderFillRect(renderer, &fillRect2);
 
 		// Draw ball.
