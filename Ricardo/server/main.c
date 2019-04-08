@@ -105,7 +105,7 @@ void game_Loop(UDPsocket* serversock) {
 			//printf("Du har fått ett paket som säkert innehåller något bra\n");
 			p_yPos = player->p_yPos;
 			p_xPos = player->p_xPos;
-			which_player = player->which_player;
+			//which_player = player->which_player;
 		}
 
 		if (tick_t1 >= next_net_tick)
