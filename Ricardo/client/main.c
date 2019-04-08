@@ -156,7 +156,7 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 
 		if (SDLNet_UDP_Recv((*clientsock), packet))
 		{
-			printf("GOTTEM\n");
+			//printf("GOTTEM\n");
 			client_packet_t* client_packet = (client_packet_t*)packet->data;
 			//p_xPos = client_packet->p_xPos;
 			//buttonPress = client_packet->press;
@@ -164,19 +164,19 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 			p_posX1 = client_packet->p_xPos;
 			which_player = client_packet->which_player;
 			printf("%f %f\n", p_posX1, p_posY1);
-			printf("Player %d\n", which_player);
+			printf("Welcome Player %d\n", which_player);
 
-			if (which_player == 0)
+			if (which_player == 1)
 			{
-				player[0].xPos += p_posX1;
-				player[0].yPos += p_posY1;
-				printf("Player 1 move!\n");
+				player[0].xPos = player[0].xPos + p_posX1;
+				player[0].yPos = player[0].yPos + p_posY1;
+				//printf("Player 1 move!\n");
 			}
-			else if (which_player == 1)
+			else if (which_player == 2)
 			{
-				player[1].xPos += p_posX1;
-				player[1].yPos += p_posY1;
-				printf("Player 2 move!\n");
+				player[1].xPos = player[1].xPos + p_posX1;
+				player[1].yPos = player[1].yPos + p_posY1;
+				//printf("Player 2 move!\n");
 			}
 			else if (which_player == 3)
 			{
