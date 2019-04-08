@@ -61,18 +61,18 @@ void game_Loop(UDPsocket* serversock) {
 	float ballSpeed = BALL_SPEED;
 	float paddleSpeed = PLAYER_SPEED;
 	float PADDLE_INIT_Y0 = SCREEN_H / 2;
+	UDPpacket *packet;
 
 	long ticks_per_sec = SDL_GetPerformanceFrequency();
 	long tick_t0 = SDL_GetPerformanceCounter();
 
 	long next_net_tick = tick_t0;
 	long net_tick_interval = (1 / NET_TICK_RATE) * ticks_per_sec;
+	packet = SDLNet_AllocPacket(1024);
 
 	p_yPos = PADDLE_INIT_Y0;
 	while (1)
 	{
-		UDPpacket *packet;
-		packet = SDLNet_AllocPacket(1024);
 		long tick_t1 = SDL_GetPerformanceCounter();
 		double dt = (tick_t1 - tick_t0) / (double)ticks_per_sec;
 
@@ -105,11 +105,12 @@ void game_Loop(UDPsocket* serversock) {
 			//printf("Du har fått ett paket som säkert innehåller något bra\n");
 			p_yPos = player->p_yPos;
 			p_xPos = player->p_xPos;
-			//which_player = player->which_player;
+			which_player = player->which_player;
 		}
 
 		if (tick_t1 >= next_net_tick)
 		{
+			// Stoppa in saker här
 			UDPpacket packet;
 			server_packet_t server_packet;
 			server_packet.p_yPos = p_yPos;
