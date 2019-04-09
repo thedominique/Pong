@@ -10,18 +10,17 @@
 #define PLAYER_SPEED 1
 #define LOCAL_PORT 1234
 
-float NET_TICK_RATE = 30;
+float NET_TICK_RATE = 60;
 
-typedef struct servPacket {
+typedef struct clientpacket {
 	float ball_yPos;
 	float ball_xPos;
 	float ball_dvX;
 	float ball_dvY;
-	float p_yPos;
-	float p_xPos;
+	float p_yPos, p_xPos;
 	int which_player;
 	SDL_bool press;
-} server_packet_t;
+} client_packet_t;
 
 void game_Loop(UDPsocket* serversock);
 bool address_equal(IPaddress a, IPaddress b);
@@ -58,6 +57,7 @@ void game_Loop(UDPsocket* serversock) {
 
 	int which_player = 0, i = 0, new_client = 0;
 	float p_xPos = 0, p_yPos = 0;
+	float ball_xPos, ball_yPos;
 	float ballSpeed = BALL_SPEED;
 	float paddleSpeed = PLAYER_SPEED;
 	float PADDLE_INIT_Y0 = SCREEN_H / 2;
@@ -78,33 +78,41 @@ void game_Loop(UDPsocket* serversock) {
 
 		if (SDLNet_UDP_Recv(*serversock, packet))
 		{
+			printf("time: %f\n", dt);
+
 			if (address_equal(packet->address, client_addr[0]))
 			{
-				printf("Hej Client 1!\n");
+				//printf("Hej Client 1!\n");
 				which_player = 1;
 			}
 			else if (address_equal(packet->address, client_addr[1]))
 			{
 				client_addr[1] = packet->address;
-				printf("Hej Client 2!\n");
+				//printf("Hej Client 2!\n");
 				which_player = 2;
 			}
-			else if (address_equal(packet->address, client_addr[2]) )
+			else if (address_equal(packet->address, client_addr[2]))
 			{
 				client_addr[2] = packet->address;
-				printf("Hej Client 3!\n");
+				//printf("Hej Client 3!\n");
 				which_player = 3;
 			}
+			else if (new_client == 3)
+			{
+				printf("Full\n");
+			}
 			else {
-				printf("Valkommen!\n");
+				printf("Valkommen client %d!\n", new_client);
 				client_addr[new_client] = packet->address;
-				which_player = 1;
+				//which_player = 1;
 				new_client = new_client + 1;
 			}
-			server_packet_t* player = (server_packet_t*)packet->data;
+			client_packet_t* client_packet = (client_packet_t*)packet->data;
 			//printf("Du har fått ett paket som säkert innehåller något bra\n");
-			p_yPos = player->p_yPos;
-			p_xPos = player->p_xPos;
+			p_yPos = client_packet->p_yPos;
+			p_xPos = client_packet->p_xPos;
+			ball_xPos = client_packet->ball_xPos;
+			ball_yPos = client_packet->ball_yPos;
 			//which_player = player->which_player;
 		}
 
@@ -112,34 +120,35 @@ void game_Loop(UDPsocket* serversock) {
 		{
 			// Stoppa in saker här
 			UDPpacket packet;
-			server_packet_t server_packet;
-			server_packet.p_yPos = p_yPos;
-			server_packet.p_xPos= p_xPos;
-		//	server_packet.ball_xPos = ball_xPos;
-		//server_packet.ball_yPos = ball_yPos;
-			server_packet.which_player = which_player;
+			client_packet_t client_packet;
+			client_packet.p_yPos = p_yPos;
+			client_packet.p_xPos = p_xPos;
+			//server_packet.ball_xPos = ball_xPos;
+			//server_packet.ball_yPos = ball_yPos;
+			client_packet.which_player = which_player;
 
-			for (i = 0; i < 3; i++)
+			for (i = 0; i < 2; i++)
 			{
 				if (client_addr[i].port == 0) {
+					printf("Client #%d\n", i);
 					continue;
 				}
 				//printf("IM IN!\n");
 				packet.address = client_addr[i];
-				packet.data = (void *)&server_packet;
+				packet.data = (void *)&client_packet;
 				packet.channel = -1;
-				packet.len = sizeof(server_packet);
+				packet.len = sizeof(client_packet);
 				packet.maxlen = packet.len;
 				if (SDLNet_UDP_Send(*serversock, -1, &packet) == 0)
 				{
 					printf("SDLNet_UDP_Send: failed %s\n", SDLNet_GetError());
 				}
+				next_net_tick += net_tick_interval;
 			}
-			next_net_tick += net_tick_interval;
 		}
 		tick_t0 = tick_t1;
+		SDLNet_FreePacket(packet);
 	}
-	//SDLNet_FreePacket(packet);
 }
 
 void print_ip(int ip) {
