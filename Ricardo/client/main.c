@@ -33,13 +33,13 @@ typedef struct serverpacket
 	float ball_xPos;
 	float ball_dvX;
 	float ball_dvY;
-	float p_yPos, p_xPos;
+	float p_yPos, p_xPos; // byt till pad_y, pad_x??
 	int which_player;
 } server_packet_t;
 
 typedef struct players
 {
-	float yPos;
+	float yPos; // använd snake för mer consistency 
 	float xPos;
 }Players;
 
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 	SDLNet_Init();
 
 	/* Open a socket on random port */
-	clientsock = SDLNet_UDP_Open(1667);
+	clientsock = SDLNet_UDP_Open(1667); // define port som en macro för att lättare kunna ändra??
 	if (!clientsock)
 	{
 		printf("SDLNet_UDP_Open: %s\n", SDL_GetError());
@@ -187,7 +187,7 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 			ball_Y1 = server_packet->ball_yPos;
 		}
 //***********************************************************************************
-//SDL_STATES***********************************************************************************
+//SDL_STATES*********************************************************************************** // poll events?
 		const Uint8* state = SDL_GetKeyboardState(NULL);
 		if (state[SDL_SCANCODE_W] && p_posY > 0)
 		{
