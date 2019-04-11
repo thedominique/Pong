@@ -10,12 +10,12 @@
 
 void game_Loop(UDPsocket* serversock);
 bool address_equal(IPaddress a, IPaddress b);
-void print_ip(int ip);	// bara fˆr att identifiera att r‰tt maskin hittad
+void print_ip(int ip);	// bara f√∂r att identifiera att r√§tt maskin hittad
 
 int main(int argc, char** argv[]) {
 	IPaddress server_ip;
 	UDPsocket serversock;
-	SDL_Window* window;
+	//SDL_Window* window;
 	SDL_Renderer* render;
 	int hesitation = 1;
 
@@ -39,7 +39,8 @@ int main(int argc, char** argv[]) {
 
 	SDLNet_Init();
 
-	init_Window(&window, &render);
+	//init_Window(&window, &render);
+	render = init_Window();
 
 	SDLNet_ResolveHost(&server_ip, NULL, 1234);
 
@@ -121,7 +122,7 @@ void game_Loop(UDPsocket* serversock, SDL_Renderer* render) {
 				new_client = new_client + 1;
 			}
 			gamestate_t* client_packet = (gamestate_t*)packet->data;
-			//printf("Du har fÂtt ett paket som s‰kert innehÂller nÂgot bra\n");
+			//printf("Du har f√•tt ett paket som s√§kert inneh√•ller n√•got bra\n");
 			p_yPos = client_packet->p_yPos;
 			p_xPos = client_packet->p_xPos;
 			ball_xPos = client_packet->ball_xPos;
@@ -131,7 +132,7 @@ void game_Loop(UDPsocket* serversock, SDL_Renderer* render) {
 
 		if ((*tick_t1) >= (*next_net_tick))
 		{
-			// Stoppa in saker h‰r
+			// Stoppa in saker h√§r
 			UDPpacket packet;
 			gamestate_t client_packet;
 			client_packet.p_yPos = p_yPos;
