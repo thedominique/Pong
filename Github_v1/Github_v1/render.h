@@ -5,7 +5,36 @@
 #include "constants.h"
 #include "game_state.h"
 
-int init_Window(SDL_Window* window, SDL_Renderer* render) {
+// fungerade inte tidigare. Den här löser problemet.
+// äldre kod står under kommenterad.
+SDL_Renderer* init_Window() {
+	SDL_Window* window;
+	SDL_Renderer* render;
+	window = SDL_CreateWindow(
+		"YEET",
+		SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED,
+		SCREEN_W,
+		SCREEN_H,
+		0);
+	if (!window)
+	{
+		printf("WINDOW OOF: %s\n", SDL_GetError());
+		exit(2);
+	}
+	render = SDL_CreateRenderer(
+		window, -1, SDL_RENDERER_ACCELERATED);
+	if (!render)
+	{
+		printf("RENDER OOF: %s\n", SDL_GetError());
+		exit(2);
+	}
+
+	return render;
+}
+
+
+/*int init_Window(SDL_Window* window, SDL_Renderer* render) {
 	window = SDL_CreateWindow(
 		"YEET",
 		SDL_WINDOWPOS_UNDEFINED,
@@ -26,7 +55,7 @@ int init_Window(SDL_Window* window, SDL_Renderer* render) {
 		return 1;
 	}
 	return 0;
-}
+}*/
 
 void windowRendering(SDL_Renderer* renderer, gamestate_t* gamestate, Players_t player[]) {
 	//SDL_SetRenderDrawColor(renderer, 0, 0, 40, 0xFF);
@@ -45,7 +74,7 @@ void windowRendering(SDL_Renderer* renderer, gamestate_t* gamestate, Players_t p
 	SDL_RenderFillRect(renderer, &fillRect2);
 
 	// Draw ball.
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // Byter f�rg
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // Byter färg
 	SDL_Rect fillRect3 = { gamestate->ball_xPos , gamestate->ball_yPos, BALL_WIDTH , BALL_HEIGHT };
 	SDL_RenderFillRect(renderer, &fillRect3);
 
