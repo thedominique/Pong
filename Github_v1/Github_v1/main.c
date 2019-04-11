@@ -80,6 +80,13 @@ void game_Loop(UDPsocket* serversock, SDL_Renderer* render) {
 	long* next_net_tick = 0;
 	long* net_tick_interval = 0;*/
 
+	
+	//Gammal version
+	//long ticks_per_sec = SDL_GetPerformanceFrequency();
+	//long tick_t0 = SDL_GetPerformanceCounter();
+
+	//long next_net_tick = tick_t0;
+	//long net_tick_interval = (1 / NET_TICK_RATE) * ticks_per_sec;
 
 	packet = SDLNet_AllocPacket(1024);
 
