@@ -7,15 +7,14 @@
 #include "constants.h"
 //#include "render.h"
 #include "client.h"
+#include "server.h"
 
 bool address_equal(IPaddress a, IPaddress b);
-void print_ip(int ip);	// bara f√∂r att identifiera att r√§tt maskin hittad
-void openClientState(SDL_Renderer* renderer, UDPsocket * clientsock, IPaddress server_addr, SDL_Window* window);
-void openServerState(UDPsocket* serversock);
+void print_ip(int ip);	// bara fˆr att identifiera att r‰tt maskin hittad
+//void openClientState(SDL_Renderer* renderer, UDPsocket * clientsock, IPaddress server_addr, SDL_Window* window);
+//void openServerState(UDPsocket* serversock);
 
 int main(int argc, char** argv[]) {
-	IPaddress ipaddress;
-	UDPsocket socket;
 	SDL_Renderer* render;
 	SDL_Window* window = 0;
 
@@ -48,35 +47,17 @@ int main(int argc, char** argv[]) {
 			printf("Initiate as server...\n");
 			SDL_Delay(1000);
 			// INSERT SERVER FUNCTION
-			SDLNet_ResolveHost(&ipaddress, NULL, LOCAL_PORT);
-			socket = SDLNet_UDP_Open(LOCAL_PORT);
-			if (!socket)
-			{
-				printf("SDLNet_UDP_Open: %s\n", SDL_GetError());
-				exit(2);
-			}
-			openServerState(&socket);
+			serverState();
 		}
 		
 	} while (hesitation != 0);
 
 	//game_Loop(&serversock, render, window);
 
-	SDLNet_UDP_Close(&socket);
 	SDLNet_Quit();
 	SDL_Quit();
 
 	return 0;
-}
-
-void print_ip(int ip) {
-
-	unsigned char bytes[4];
-	bytes[0] = ip & 0xFF;
-	bytes[1] = (ip >> 8) & 0xFF;
-	bytes[2] = (ip >> 16) & 0xFF;
-	bytes[3] = (ip >> 24) & 0xFF;
-	printf("%d.%d.%d.%d\n", bytes[3], bytes[2], bytes[1], bytes[0]);
 }
 
 /*void openClientState(SDL_Renderer* renderer, UDPsocket * clientsock, IPaddress server_addr, SDL_Window* window){
@@ -244,7 +225,7 @@ void print_ip(int ip) {
 		SDL_RenderPresent(renderer);
 		//SDLNet_FreePacket(&packet);
 	}
-}*/
+}
 
 void openServerState(UDPsocket* serversock){
 	IPaddress client_addr[3] = { 0, 0, 0 };
@@ -263,9 +244,9 @@ void openServerState(UDPsocket* serversock){
 	/*long* ticks_per_sec = 0;
 	long* tick_t0 = 0;
 	long* next_net_tick = 0;
-	long* net_tick_interval = 0;*/
+	long* net_tick_interval = 0;
 
-	long ticks_per_sec = SDL_GetPerformanceFrequency();
+*long ticks_per_sec = SDL_GetPerformanceFrequency();
 	long tick_t0 = SDL_GetPerformanceCounter();
 
 	long next_net_tick = tick_t0;
@@ -312,7 +293,7 @@ void openServerState(UDPsocket* serversock){
 				new_client = new_client + 1;
 			}
 			gamestate_t* client_packet = (gamestate_t*)packet->data;
-			//printf("Du har f√•tt ett paket som s√§kert inneh√•ller n√•got bra\n");
+			//printf("Du har fÂtt ett paket som s‰kert innehÂller nÂgot bra\n");
 			p_yPos += 1; //client_packet->p_yPos;
 			p_xPos = client_packet->p_xPos;
 			ball_xPos = client_packet->ball_xPos;
@@ -322,7 +303,7 @@ void openServerState(UDPsocket* serversock){
 
 		if (tick_t1 >= next_net_tick)
 		{
-			// Stoppa in saker h√§r
+			// Stoppa in saker h‰r
 			UDPpacket packet;
 			gamestate_t client_packet;
 			client_packet.p_yPos = p_yPos;
@@ -358,4 +339,4 @@ void openServerState(UDPsocket* serversock){
 
 bool address_equal(IPaddress a, IPaddress b) {
 	return a.host == b.host && a.port == b.port;
-}
+}*/

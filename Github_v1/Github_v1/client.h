@@ -38,7 +38,7 @@ typedef struct serverpacket
 
 typedef struct players
 {
-	float yPos; // anvÃ¤nd snake fÃ¶r mer consistency 
+	float yPos; // använd snake för mer consistency 
 	float xPos;
 }Players;
 
@@ -59,7 +59,7 @@ void clientState(void){
 	SDLNet_Init();
 
 	/* Open a socket on random port */
-	clientsock = SDLNet_UDP_Open(1667); // define port som en macro fÃ¶r att lÃ¤ttare kunna Ã¤ndra??
+	clientsock = SDLNet_UDP_Open(1667); // define port som en macro för att lättare kunna ändra??
 	if (!clientsock)
 	{
 		printf("SDLNet_UDP_Open: %s\n", SDL_GetError());
@@ -67,7 +67,7 @@ void clientState(void){
 	}
 
 	/* Resolve server name  */
-	SDLNet_ResolveHost(&ipaddress, "130.229.176.242", 1234); // initiera packet fÃ¶r servern
+	SDLNet_ResolveHost(&ipaddress, "130.229.176.242", 1234); // initiera packet för servern
 
 	SDL_Window* window = SDL_CreateWindow(
 		"Ultra pong",
@@ -290,28 +290,28 @@ void moveball(int vertical_direction, int horizontal_direction, float ball_y0, f
 			{
 				ball_x0 -= 3 * dt;
 
-				//SDL_Delay(3);
+				SDL_Delay(3);
 			}
 
 			if (horizontal_direction == 1)
 			{
 				ball_x0 += 3 * dt;
 
-				//SDL_Delay(3);
+				SDL_Delay(3);
 			}
 
 			if (vertical_direction == 2)
 			{
 
 				ball_y0 += yangle * dt;
-				//SDL_Delay(3);
+				SDL_Delay(3);
 			}
 
 			if (vertical_direction == 1)
 			{
 
 				ball_y0 -= yangle * dt;
-				//SDL_Delay(3);
+				SDL_Delay(3);
 			}
 
 		}

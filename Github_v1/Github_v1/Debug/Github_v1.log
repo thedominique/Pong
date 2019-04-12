@@ -1,16 +1,30 @@
 ﻿  main.c
-c:\dev\github_v1\github_v1\render.h(39): warning C4244: 'initializing': conversion from 'const float' to 'int', possible loss of data
-c:\dev\github_v1\github_v1\render.h(44): warning C4244: 'initializing': conversion from 'const float' to 'int', possible loss of data
-c:\dev\github_v1\github_v1\render.h(49): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-c:\dev\github_v1\github_v1\main.c(15): warning C4028: formal parameter 2 different from declaration
-c:\dev\github_v1\github_v1\main.c(42): warning C4047: 'function': 'SDL_Window *' differs in levels of indirection from 'SDL_Window **'
-c:\dev\github_v1\github_v1\main.c(42): warning C4024: 'init_Window': different types for formal and actual parameter 1
-c:\dev\github_v1\github_v1\main.c(42): warning C4047: 'function': 'SDL_Renderer *' differs in levels of indirection from 'SDL_Renderer **'
-c:\dev\github_v1\github_v1\main.c(42): warning C4024: 'init_Window': different types for formal and actual parameter 2
-c:\dev\github_v1\github_v1\main.c(53): warning C4020: 'game_Loop': too many actual parameters
-c:\dev\github_v1\github_v1\main.c(62): warning C4029: declared formal parameter list different from definition
-c:\dev\github_v1\github_v1\main.c(90): error C2100: illegal indirection
-c:\dev\github_v1\github_v1\main.c(132): error C2100: illegal indirection
-c:\dev\github_v1\github_v1\main.c(159): error C2100: illegal indirection
-c:\dev\github_v1\github_v1\main.c(163): error C2100: illegal indirection
-c:\dev\github_v1\github_v1\main.c(88): warning C4047: 'initializing': 'long *' differs in levels of indirection from 'Uint64'
+c:\dev\github_v1\github_v1\client.h(82): warning C4098: 'clientState': 'void' function returning a value
+c:\dev\github_v1\github_v1\client.h(88): warning C4098: 'clientState': 'void' function returning a value
+c:\dev\github_v1\github_v1\client.h(94): warning C4098: 'clientState': 'void' function returning a value
+c:\dev\github_v1\github_v1\client.h(203): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\dev\github_v1\github_v1\client.h(208): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\dev\github_v1\github_v1\client.h(213): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\dev\github_v1\github_v1\client.h(218): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\dev\github_v1\github_v1\client.h(120): warning C4244: 'initializing': conversion from 'Uint64' to 'long', possible loss of data
+c:\dev\github_v1\github_v1\client.h(121): warning C4244: 'initializing': conversion from 'Uint64' to 'long', possible loss of data
+c:\dev\github_v1\github_v1\client.h(132): warning C4244: 'initializing': conversion from 'Uint64' to 'long', possible loss of data
+c:\dev\github_v1\github_v1\client.h(266): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\dev\github_v1\github_v1\client.h(271): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\dev\github_v1\github_v1\client.h(276): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\dev\github_v1\github_v1\client.h(108): warning C4101: 'ball_Y1': unreferenced local variable
+c:\dev\github_v1\github_v1\client.h(108): warning C4101: 'ball_X1': unreferenced local variable
+c:\dev\github_v1\github_v1\client.h(287): warning C4029: declared formal parameter list different from definition
+c:\dev\github_v1\github_v1\client.h(291): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\dev\github_v1\github_v1\client.h(298): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\dev\github_v1\github_v1\client.h(306): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\dev\github_v1\github_v1\client.h(313): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\dev\github_v1\github_v1\client.h(356): warning C4028: formal parameter 1 different from declaration
+c:\dev\github_v1\github_v1\server.h(54): warning C4098: 'serverState': 'void' function returning a value
+c:\dev\github_v1\github_v1\server.h(75): warning C4244: 'initializing': conversion from 'Uint64' to 'long', possible loss of data
+c:\dev\github_v1\github_v1\server.h(76): warning C4244: 'initializing': conversion from 'Uint64' to 'long', possible loss of data
+c:\dev\github_v1\github_v1\server.h(85): warning C4244: 'initializing': conversion from 'Uint64' to 'long', possible loss of data
+c:\dev\github_v1\github_v1\main.c(17): warning C4028: formal parameter 2 different from declaration
+c:\dev\github_v1\github_v1\main.c(34): warning C4013: 'gets' undefined; assuming extern returning int
+c:\dev\github_v1\github_v1\main.c(18): warning C4101: 'render': unreferenced local variable
+  Github_v1.vcxproj -> C:\Dev\Github_v1\Debug\Github_v1.exe

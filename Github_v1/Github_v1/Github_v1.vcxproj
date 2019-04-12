@@ -133,12 +133,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.c" />
+    <ClCompile Include="render.c" />
     <ClCompile Include="sync.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="client.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="game_state.h" />
     <ClInclude Include="render.h" />
+    <ClInclude Include="server.h" />
     <ClInclude Include="sync.h" />
     <ClInclude Include="tick.h" />
   </ItemGroup>
