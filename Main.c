@@ -1,399 +1,183 @@
-#if 0
-#!/bin/sh
-
-gcc - Wall `sdl-config --cflags` udpc.c - o udpc `sdl-config --libs` - lSDL_net
-
-exit
-#endif
 #include <stdio.h>
-#include <stdlib.h>
+#include <SDL.h>
+#include <SDL_net.h>
 #include <string.h>
-#include "SDL_net.h"
+#include <stdbool.h>
 
-#define BALL_WIDTH	20
-#define BALL_HEIGHT	20
-#define BALL_SPEED 0.5
-#define SCREEN_W  1000
-#define SCREEN_H  500
+#define SCREEN_W 1000
+#define SCREEN_H 500
+#define BALL_SPEED 5
+#define PLAYER_SPEED 1
+#define LOCAL_PORT 1234
 
 float NET_TICK_RATE = 60;
-float PAD_SPEED_X = 500;
-float PAD_SPEED_Y = 500;
-float BALL_INIT_X0 = SCREEN_W / 2;
-float BALL_INIT_Y0 = SCREEN_H / 2;
-float PAD_INIT_Y0 = 0;
-//***********************************************************************************
-const double PAD_WIDTH = 20;
-const double PAD_HEIGHT = 100;
-const double PAD_PAD = 0.02;
 
-typedef struct serverpacket
-{
+typedef struct clientpacket {
 	float ball_yPos;
 	float ball_xPos;
 	float ball_dvX;
 	float ball_dvY;
-	float p_yPos, p_xPos; // byt till pad_y, pad_x??
+	float p_yPos, p_xPos;
 	int which_player;
 	int p_horizontal_direction;
 	int p_vertical_direction;
 	int p_yangle;
-} server_packet_t;
+	SDL_bool press;
+} client_packet_t;
 
-typedef struct players
-{
-	float yPos; // använd snake för mer consistency 
-	float xPos;
-}Players;
+void game_Loop(UDPsocket* serversock);
+bool address_equal(IPaddress a, IPaddress b);
+void print_ip(int ip);	// bara för att identifiera att rätt maskin hittad
 
-void game_Logic(SDL_Renderer* renderer, UDPsocket* udpsock, IPaddress server_addr, SDL_Window* window);
-void wallhit(float ball_y0, float ball_x0,int yangle);
-void padhit(player, int vertical_direction, int horizontal_direction, float ball_y0, float ball_x0);
-void moveball(int vertical_direction, int horizontal_direction, float ball_y0, float ball_x0, int yangle);
+int main(int argc, char** argv[]) {
+	IPaddress server_ip;
+	UDPsocket serversock;
 
-int main(int argc, char **argv)
-{
-	UDPsocket clientsock;
-	IPaddress ipaddress;
-
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-	{
-		printf("SDL_Init: %s\n", SDL_GetError());
-		exit(2);
-	}
+	SDL_Init(SDL_INIT_EVERYTHING);
 	SDLNet_Init();
 
-	/* Open a socket on random port */
-	clientsock = SDLNet_UDP_Open(1667); // define port som en macro för att lättare kunna ändra??
-	if (!clientsock)
+	SDLNet_ResolveHost(&server_ip, NULL, 1234);
+
+	serversock = SDLNet_UDP_Open(1234);
+	if (!serversock)
 	{
 		printf("SDLNet_UDP_Open: %s\n", SDL_GetError());
 		exit(2);
 	}
 
-	/* Resolve server name  */
-	SDLNet_ResolveHost(&ipaddress, "130.229.151.94", 1234); // initiera packet för servern
+	game_Loop(&serversock);
 
-	SDL_Window* window = SDL_CreateWindow(
-		"Ultra pong",
-		SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED,
-		SCREEN_W,
-		SCREEN_H,
-		0);
-
-	if (!window) {
-		printf("Could not create window: %s\n", SDL_GetError());
-		return 1;
-	}
-
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-	if (!renderer) {
-		printf("Could not create renderer: %s\n", SDL_GetError());
-		return 1;
-	}
-
-	game_Logic(renderer, &clientsock, ipaddress, window);
+	SDLNet_UDP_Close(serversock);
 	SDLNet_Quit();
+	SDL_Quit();
 
-	return EXIT_SUCCESS;
+	return 0;
 }
 
-void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress server_addr, SDL_Window* window) {
-	int which_player = 0;
-	int quit;
-	//INIT PLAYER POSITION***********************************************************************************
-	float p1_posX0 = 0, p1_posY0 = PAD_INIT_Y0;
-	float p2_posX0 = SCREEN_W, p2_posY0 = PAD_INIT_Y0;
-	float p_posX1 = 0, p_posY1 = 0; // Updates player position
-	float  p_posY = 0, p_posX = 0;	// Takes data from packet. Updates X1 position.
-//***********************************************************************************
-//BALL POSITION**********************************************************************************/
-	float ball_x0 = BALL_INIT_X0, ball_y0 = BALL_INIT_Y0;
-	float ball_X1, ball_Y1;
-//BALL DIRECTION AND DYNAMIC SPEED FACTOR YANGLE**********************************************************************************/
-	int horizontal_direction = 1;
-	int vertical_direction = 0;
-	int yangle = 3;
+void game_Loop(UDPsocket* serversock) {
+	IPaddress client_addr[3] = { 0, 0, 0 };
+	//SDL_Event event;
 
-//Other Stuff**********************************************************************************/
-	SDL_Event event;
-	SDL_bool buttonPress = SDL_FALSE;
-	UDPpacket* packet;
-	Players player[3] = { 0,0,0 };
+	int which_player = 0, i = 0, new_client = 0;
+	float p_xPos = 0, p_yPos = 0;
+	float ball_xPos, ball_yPos;
+	float ballSpeed = BALL_SPEED;
+	float paddleSpeed = PLAYER_SPEED;
+	float PADDLE_INIT_Y0 = SCREEN_H / 2;
+
+	int p_horizontal_direction = 0;
+	int p_vertical_direction = 0;
+	int p_yangle = 0;
+
+
+	UDPpacket *packet;
 
 	long ticks_per_sec = SDL_GetPerformanceFrequency();
 	long tick_t0 = SDL_GetPerformanceCounter();
 
 	long next_net_tick = tick_t0;
 	long net_tick_interval = (1 / NET_TICK_RATE) * ticks_per_sec;
-
-	/* Allocate memory for the packet */
 	packet = SDLNet_AllocPacket(1024);
-	/* Main loop */
-	quit = 1;
-	while (quit)
+
+	p_yPos = PADDLE_INIT_Y0;
+	while (1)
 	{
 		long tick_t1 = SDL_GetPerformanceCounter();
 		double dt = (tick_t1 - tick_t0) / (double)ticks_per_sec;
 
-		while (SDL_PollEvent(&event))
+		if (SDLNet_UDP_Recv(*serversock, packet))
 		{
-			switch (event.type)
+			printf("time: %f\n", dt);
+
+			if (address_equal(packet->address, client_addr[0]))
 			{
-			case SDL_WINDOWEVENT_CLOSE:
+				//printf("Hej Client 1!\n");
+				which_player = 1;
+			}
+			else if (address_equal(packet->address, client_addr[1]))
 			{
-				if (window)
-				{
-					SDL_DestroyWindow(window);
-					window = NULL;
-					//done = 1;
-				}
+				client_addr[1] = packet->address;
+				//printf("Hej Client 2!\n");
+				which_player = 2;
 			}
-			break;
-			case SDL_KEYDOWN:
+			else if (address_equal(packet->address, client_addr[2]))
 			{
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_ESCAPE:
-					//done = 1;
-					break;
-				}
+				client_addr[2] = packet->address;
+				//printf("Hej Client 3!\n");
+				which_player = 3;
 			}
-			break;
-			case SDL_QUIT:
-				//quit out of the game
-				//done = 1;
-				break;
-			}
-		}
-		//***********************************************************************************
-		//RECIEVE PACKET***********************************************************************************
-		if (SDLNet_UDP_Recv((*clientsock), packet))
-		{
-			server_packet_t* server_packet = (server_packet_t*)packet->data;
-			p_posY1 = server_packet->p_yPos;
-			p_posX1 = server_packet->p_xPos;
-			which_player = server_packet->which_player;	// UNPACK VALUE TO CORRESPONDING
-														// IPADDRESS WHICH THE SERVER SORTS OUT
-
-
-			int horizontal_direction;
-			int vertical_direction;
-			int yangle;
-			printf("Welcome Player %d\n", which_player);
-
-			if (which_player == 1)
+			else if (new_client == 3)
 			{
-				player[0].xPos = p_posX1;
-				player[0].yPos = p_posY1;
-				printf("Player 1 move!\n");
+				printf("Full\n");
 			}
-			else if (which_player == 2)
-			{
-				player[1].xPos = p_posX1;
-				player[1].yPos = p_posY1;
-				printf("Player 2 move!\n");
+			else {
+				printf("Valkommen client %d!\n", new_client);
+				client_addr[new_client] = packet->address;
+				//which_player = 1;
+				new_client = new_client + 1;
 			}
-			else if (which_player == 3)
-			{
-				printf("Hej\n");
-			}
-			ball_x0 = server_packet->ball_xPos;
-			ball_y0 = server_packet->ball_yPos;
-			horizontal_direction = server_packet->p_horizontal_direction;
-			vertical_direction = server_packet->p_vertical_direction;
-			yangle = server_packet->p_yangle;
-		}
-		//***********************************************************************************
-		//SDL_STATES*********************************************************************************** // poll events?
-		const Uint8* state = SDL_GetKeyboardState(NULL);
-		if (state[SDL_SCANCODE_W] && p_posY > 0)
-		{
-			p_posY -= PAD_SPEED_Y * dt;
+			client_packet_t* client_packet = (client_packet_t*)packet->data;
+			//printf("Du har fått ett paket som säkert innehåller något bra\n");
+			p_yPos = client_packet->p_yPos;
+			p_xPos = client_packet->p_xPos;
+			ball_xPos = client_packet->ball_xPos;
+			ball_yPos = client_packet->ball_yPos;
 
-		}
-		if (state[SDL_SCANCODE_S] && p_posY < SCREEN_H - PAD_HEIGHT)
-		{
-			p_posY += PAD_SPEED_Y * dt;
-
-		}
-		if (state[SDL_SCANCODE_A]/* && p_posX > 0*/)
-		{
-			p_posX -= PAD_SPEED_X * dt;
-
-		}
-		if (state[SDL_SCANCODE_D] && p_posX < SCREEN_W - PAD_WIDTH)
-		{
-			p_posX += PAD_SPEED_X * dt;
-		}
-		//***********************************************************************************
-		//Change ball direction***********************************************************************************
-		void wallhit(float ball_y0, float ball_x0,int yangle) {
-			if (ball_x0 >= SCREEN_W)
-			{
-				horizontal_direction = 2;
-				if (vertical_direction == 1 || vertical_direction == 0)
-				{
-					vertical_direction = 1;
-				}
-				else
-					vertical_direction = 2;
-			}
-
-			if (ball_x0 <= 0)
-			{
-				horizontal_direction = 1;
-				if (vertical_direction == 2 || vertical_direction == 0)
-				{
-					vertical_direction = 2;
-				}
-				else
-					vertical_direction = 1;
-			}
-
-			if (ball_y0 <= 0)
-			{
-				//horizontal_direction = 1;
-				vertical_direction = 2;
-				yangle = rand() % 4 + 1;
-
-			}
-			if (ball_y0 >= SCREEN_H)
-			{
-				//horizontal_direction = 1;
-				vertical_direction = 1;
-				yangle = rand() % 4 + 1;
-			}
-
-
-		}
-		
-		void padhit(player, int vertical_direction, int horizontal_direction, float ball_y0, float ball_x0)
-		{
-
-			// BLOCK BALL RIGHT PADDLE
-
-			if (ball_x0 < player[1].xPos - 10 && ball_x0 > player[1].xPos - 16 && ball_y0 >= player[1].yPos - 45 && ball_y0 <= player[1].yPos + 145)
-			{
-
-				horizontal_direction = 2;
-				if (vertical_direction == 1 || vertical_direction == 0)
-				{
-					vertical_direction = 1;
-				}
-				else
-					vertical_direction = 2;
-
-			}
-
-			// BLOCK BALL LEFT PADDLE
-
-			if (player[0].xPos + 10 < ball_x0 && player[0].xPos + 16 > ball_x0 && player[0].y0 - 45 < ball_y0 && player[0].yPos + 145 > ball_y0)
-			{
-
-				horizontal_direction = 1;
-				if (vertical_direction == 1 || vertical_direction == 0)
-				{
-					vertical_direction = 1;
-				}
-				else
-					vertical_direction = 2;
-
-			}
-
+			p_yangle = client_packet->p_yangle;
+			p_horizontal_direction = client_packet->p_horizontal_direction;
+			p_vertical_direction = client_packet->p_vertical_direction;
+			//which_player = player->which_player;
 		}
 
-		void moveball(int vertical_direction, int horizontal_direction, float ball_y0, float ball_x0, int yangle, double dt)
-		{
-
-			if (horizontal_direction == 2)
-			{
-				ball_x0 -= 3 * dt;
-
-				SDL_Delay(3);
-			}
-
-			if (horizontal_direction == 1)
-			{
-				ball_x0 += 3 * dt;
-
-				SDL_Delay(3);
-			}
-
-			if (vertical_direction == 2)
-			{
-
-				ball_y0 += yangle * dt;
-				SDL_Delay(3);
-			}
-
-			if (vertical_direction == 1)
-			{
-
-				ball_y0 -= yangle * dt;
-				SDL_Delay(3);
-			}
-
-		}
-
-		//***********************************************************************************
-		//SEND PACKAGE***********************************************************************************
 		if (tick_t1 >= next_net_tick)
 		{
-
-			// create new server packet locally and insert contents
-			server_packet_t server_packet;
-			
-			server_packet.p_yPos = p_posY;
-			server_packet.p_xPos = p_posX;
-			server_packet.which_player = which_player;
-
-			server_packet.p_yangle = yangle;
-			server_packet.p_horizontal_direction = horizontal_direction;
-			server_packet.p_vertical_direction = vertical_direction;
-
-			server_packet.ball_yPos = ball_x0;
-			server_packet.ball_xPos = ball_y0;
-
-
-
-			// Create packet then fill it with contents from server packet
+			// Stoppa in saker här
 			UDPpacket packet;
-			//printf("WEEE%f\n", client_packet.p_yPos);
-			packet.data = (void*)&server_packet;
-			packet.address = server_addr;
-			packet.channel = -1;
-			packet.len = sizeof(server_packet);
-			packet.maxlen = packet.len;
-			//printf("Sent!\n");
-			SDLNet_UDP_Send(*clientsock, -1, &packet);
-			next_net_tick += net_tick_interval;
+			client_packet_t client_packet;
+			client_packet.p_yPos = p_yPos;
+			client_packet.p_xPos = p_xPos;
+			//server_packet.ball_xPos = ball_xPos;
+			//server_packet.ball_yPos = ball_yPos;
+			client_packet.which_player = which_player;
+
+			client_packet.p_yangle = p_yangle;
+			client_packet.p_horizontal_direction = p_horizontal_direction;
+			client_packet.p_vertical_direction = p_vertical_direction;
+
+			for (i = 0; i < 2; i++)
+			{
+				if (client_addr[i].port == 0) {
+					printf("Client #%d\n", i);
+					continue;
+				}
+				//printf("IM IN!\n");
+				packet.address = client_addr[i];
+				packet.data = (void *)&client_packet;
+				packet.channel = -1;
+				packet.len = sizeof(client_packet);
+				packet.maxlen = packet.len;
+				if (SDLNet_UDP_Send(*serversock, -1, &packet) == 0)
+				{
+					printf("SDLNet_UDP_Send: failed %s\n", SDLNet_GetError());
+				}
+				next_net_tick += net_tick_interval;
+			}
 		}
-		//***********************************************************************************
-		//RENDERER***********************************************************************************
-		SDL_SetRenderDrawColor(renderer, 0, 0, 40, 0xFF);
-
-		SDL_RenderClear(renderer);
-
-		SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-
-		// Draw pad 1.
-		SDL_Rect fillRect = { p1_posX0 + player[0].xPos , p1_posY0 + player[0].yPos, PAD_WIDTH, PAD_HEIGHT };
-		SDL_RenderFillRect(renderer, &fillRect);
-
-		// Draw pad 2.
-		SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-		SDL_Rect fillRect2 = { (p2_posX0 - PAD_WIDTH - 5) + player[1].xPos, (p2_posY0)+player[1].yPos, PAD_WIDTH, PAD_HEIGHT };
-		SDL_RenderFillRect(renderer, &fillRect2);
-
-		// Draw ball.
-		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-		SDL_Rect fillRect3 = { ball_x0 , ball_y0, BALL_WIDTH , BALL_HEIGHT };
-		SDL_RenderFillRect(renderer, &fillRect3);
-
 		tick_t0 = tick_t1;
-		SDL_RenderPresent(renderer);
-		//SDLNet_FreePacket(&packet);
+		SDLNet_FreePacket(packet);
 	}
+}
+
+void print_ip(int ip) {
+
+	unsigned char bytes[4];
+	bytes[0] = ip & 0xFF;
+	bytes[1] = (ip >> 8) & 0xFF;
+	bytes[2] = (ip >> 16) & 0xFF;
+	bytes[3] = (ip >> 24) & 0xFF;
+	printf("%d.%d.%d.%d\n", bytes[3], bytes[2], bytes[1], bytes[0]);
+}
+
+bool address_equal(IPaddress a, IPaddress b) {
+	return a.host == b.host && a.port == b.port;
 }
