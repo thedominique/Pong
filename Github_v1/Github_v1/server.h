@@ -27,7 +27,7 @@ typedef struct clientpacket {
 
 void game_Loop(UDPsocket* serversock);
 bool address_equal(IPaddress a, IPaddress b);
-void print_ip(int ip);	// bara fˆr att identifiera att r‰tt maskin hittad
+void print_ip(int ip);	// bara f√∂r att identifiera att r√§tt maskin hittad
 
 void serverState(void) {
 	IPaddress server_ip;
@@ -117,7 +117,7 @@ void game_Loop(UDPsocket* serversock) {
 				new_client = new_client + 1;
 			}
 			client_packet_t* client_packet = (client_packet_t*)packet->data;
-			//printf("Du har fÂtt ett paket som s‰kert innehÂller nÂgot bra\n");
+			//printf("Du har f√•tt ett paket som s√§kert inneh√•ller n√•got bra\n");
 			p_yPos = client_packet->p_yPos;
 			p_xPos = client_packet->p_xPos;
 			ball_xPos = client_packet->ball_xPos;
@@ -126,12 +126,11 @@ void game_Loop(UDPsocket* serversock) {
 			p_yangle = client_packet->p_yangle;
 			p_horizontal_direction = client_packet->p_horizontal_direction;
 			p_vertical_direction = client_packet->p_vertical_direction;
-			which_player = client_packet->which_player;
 		}
 
 		if (tick_t1 >= next_net_tick)
 		{
-			// Stoppa in saker h‰r
+			// Stoppa in saker h√§r
 			UDPpacket packet;
 			client_packet_t client_packet;
 			client_packet.p_yPos = p_yPos;
