@@ -1,0 +1,101 @@
+#include <SDL.h>  
+#include <SDL_image.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <SDL_mixer.h>
+
+int main(int argc, char ** argv)
+{
+	bool pressed = false;
+	bool pressed1 = false;
+	bool quit = false;
+	Mix_Music *music = NULL;	//Låt som används
+	SDL_Event event;
+
+	SDL_Init(SDL_INIT_EVERYTHING);
+	IMG_Init(IMG_INIT_JPG);
+	Mix_Init(MIX_INIT_MP3);
+	//Create Window
+	SDL_Window * window = SDL_CreateWindow("SDL2 Displaying Image", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, 0);
+	//Create render, surface and texture
+	SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED|SDL_RENDERER_PRESENTVSYNC);
+	SDL_Surface * image = IMG_Load("mainmenu.jpg");
+	SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, image);
+	//Create invisible buttons over play and exit, adds image
+	SDL_Rect dstrect = { 5, 5, 320, 240 };
+	SDL_RenderCopy(renderer, texture, NULL, &dstrect);
+	SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+	SDL_Rect box = { 290, 100, 470, 180 };
+	//SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);		//Test to see where rectangle is
+	//SDL_RenderFillRect(renderer, &box);
+	SDL_Rect box2 = { 270, 365, 300, 100 };
+	//SDL_RenderFillRect(renderer, &box2);
+	SDL_RenderPresent(renderer);
+	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1)
+	{
+		printf("FALSE %s", SDL_GetError());
+	}
+	music = Mix_LoadWAV("DoYouWantToPlay.wav");
+	if (music == NULL)
+	{
+		printf("Music failed to load %s", SDL_GetError());
+	}
+	int channel = Mix_PlayChannel(-1, music, -1);
+
+	//Event handling, close window and button press
+	while (!quit)
+	{
+		pressed = false;
+		pressed1 = false;
+		SDL_Event evt;
+		while (SDL_PollEvent(&evt))
+		{
+			// quit on close, window close, or 'escape' key hit
+			if (evt.type == SDL_QUIT ||
+				(evt.type == SDL_WINDOWEVENT && evt.window.event == SDL_WINDOWEVENT_CLOSE) ||
+				(evt.type == SDL_KEYDOWN && evt.key.keysym.sym == SDLK_ESCAPE)) {
+				quit = 1;
+			}
+			if (evt.type == SDL_MOUSEBUTTONDOWN && 
+				evt.button.x >= box.x && 
+				evt.button.x <= (box.x + box.w) && 
+				evt.button.y >= box.y && 
+				evt.button.y <= (box.h + box.y))
+			{
+				
+				pressed = true;
+			}
+			else if (evt.type == SDL_MOUSEBUTTONDOWN &&
+				evt.button.x >= box2.x &&
+				evt.button.x <= (box2.x + box2.w) &&
+				evt.button.y >= box2.y &&
+				evt.button.y <= (box2.h + box2.y))
+			{
+				pressed1 = true;
+			}
+			if (pressed == true)
+			{
+				printf("DU HAR TRYCKT PLAY\n");			// HÄR STARTAR SPEL SKIT
+			}
+			if (pressed1 == true)
+			{
+				printf("DU HAR TRYCKT QUIT\n");			//STÄNG NER SKIT
+			}
+		}
+	}
+
+	Mix_FreeMusic(music);
+	Mix_CloseAudio();
+	SDL_DestroyTexture(texture);
+	SDL_FreeSurface(image);
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+
+	IMG_Quit();
+	SDL_Quit();
+
+	return 0;
+}
