@@ -9,7 +9,6 @@
 
 #define BALL_WIDTH	20
 #define BALL_HEIGHT	20
-#define BALL_SPEED 0.5
 #define SCREEN_W  1000
 #define SCREEN_H  500
 
@@ -39,7 +38,7 @@ typedef struct serverpacket
 
 typedef struct players
 {
-	float yPos; // använd snake för mer consistency 
+	float yPos; // anvÃ¤nd snake fÃ¶r mer consistency 
 	float xPos;
 }Players;
 
@@ -60,7 +59,7 @@ void clientState(void){
 	SDLNet_Init();
 
 	/* Open a socket on random port */
-	clientsock = SDLNet_UDP_Open(1667); // define port som en macro för att lättare kunna ändra??
+	clientsock = SDLNet_UDP_Open(1667); // define port som en macro fÃ¶r att lÃ¤ttare kunna Ã¤ndra??
 	if (!clientsock)
 	{
 		printf("SDLNet_UDP_Open: %s\n", SDL_GetError());
@@ -68,7 +67,7 @@ void clientState(void){
 	}
 
 	/* Resolve server name  */
-	SDLNet_ResolveHost(&ipaddress, "130.229.151.94", 1234); // initiera packet för servern
+	SDLNet_ResolveHost(&ipaddress, "130.229.176.242", 1234); // initiera packet fÃ¶r servern
 
 	SDL_Window* window = SDL_CreateWindow(
 		"Ultra pong",
@@ -102,7 +101,7 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 	float p1_posX0 = 0, p1_posY0 = PAD_INIT_Y0;
 	float p2_posX0 = SCREEN_W, p2_posY0 = PAD_INIT_Y0;
 	float p_posX1 = 0, p_posY1 = 0; // Updates player position
-	float  p_posY = 0, p_posX = 0;	// Takes data from packet. Updates X1 position.
+	float p_posY = 0, p_posX = 0;	// Takes data from packet. Updates X1 position.
 //***********************************************************************************
 //BALL POSITION**********************************************************************************/
 	float ball_x0 = BALL_INIT_X0, ball_y0 = BALL_INIT_Y0;
@@ -172,11 +171,6 @@ void game_Logic(SDL_Renderer * renderer, UDPsocket * clientsock, IPaddress serve
 			p_posX1 = server_packet->p_xPos;
 			which_player = server_packet->which_player;	// UNPACK VALUE TO CORRESPONDING
 														// IPADDRESS WHICH THE SERVER SORTS OUT
-
-
-			int horizontal_direction;
-			int vertical_direction;
-			int yangle;
 			printf("Welcome Player %d\n", which_player);
 
 			if (which_player == 1)
@@ -296,28 +290,28 @@ void moveball(int vertical_direction, int horizontal_direction, float ball_y0, f
 			{
 				ball_x0 -= 3 * dt;
 
-				SDL_Delay(3);
+				//SDL_Delay(3);
 			}
 
 			if (horizontal_direction == 1)
 			{
 				ball_x0 += 3 * dt;
 
-				SDL_Delay(3);
+				//SDL_Delay(3);
 			}
 
 			if (vertical_direction == 2)
 			{
 
 				ball_y0 += yangle * dt;
-				SDL_Delay(3);
+				//SDL_Delay(3);
 			}
 
 			if (vertical_direction == 1)
 			{
 
 				ball_y0 -= yangle * dt;
-				SDL_Delay(3);
+				//SDL_Delay(3);
 			}
 
 		}
