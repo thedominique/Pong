@@ -5,11 +5,10 @@
 #include <stdbool.h>
 #include "game_state.h"
 #include "constants.h"
+//#include "render.h"
 #include "client.h"
 #include "server.h"
 
-bool address_equal(IPaddress a, IPaddress b);
-void print_ip(int ip);	// bara för att identifiera att rätt maskin hittad
 
 int main(int argc, char** argv[]) {
 	int hesitation;
