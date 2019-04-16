@@ -9,19 +9,6 @@
 #include "objects.h"
 #include "player_handler.h"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 int main(int argc, char **argv)
 {
 	int i = 0;
@@ -52,7 +39,6 @@ int main(int argc, char **argv)
 	gamestate.ball.xVel = BALL_SPEED;
 	gamestate.ball.yVel = BALL_SPEED;
 
-
 	float NET_TICK_RATE = 30;
 
 	init_array_struct(client_ipaddress);
@@ -74,12 +60,10 @@ int main(int argc, char **argv)
 	long next_net_tick = tick_t0;
 	long net_tick_interval = (1 / NET_TICK_RATE) * ticks_per_sec;
 
-
 	while (1)
 	{
 		long tick_t1 = SDL_GetPerformanceCounter();
 		double dt = (tick_t1 - tick_t0) / (double)ticks_per_sec;
-
 
 		if (SDLNet_UDP_Recv(server_socket, packet_receive))
 		{
@@ -91,7 +75,6 @@ int main(int argc, char **argv)
 		}
 		printf("TRIED TO SEND ball x: %lf\n", gamestate.ball.x);
 		
-		
 		/*
 		if (collision_check(&gamestate))
 		{
@@ -99,7 +82,6 @@ int main(int argc, char **argv)
 			gamestate.ball.yVel = -gamestate.ball.yVel;
 		}
 		*/
-
 
 		detect_collision(&gamestate);
 
@@ -129,10 +111,7 @@ int main(int argc, char **argv)
 
 			}
 			next_net_tick += net_tick_interval;
-			
 		}
-
-		
 
 	}
 
