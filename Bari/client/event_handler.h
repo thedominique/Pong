@@ -3,12 +3,10 @@
 #define event_handler_h
 #include "objects.h"
 
-
-
 int processEvents(SDL_Window *window, Paddle *mypaddle)
 {
 	SDL_Event event;
-	int done = 0;
+	int done = 0; // skit i använd condition ist
 
 	//DETECT KEYS (ESC, CLOSE(X))
 	while (SDL_PollEvent(&event))
@@ -42,8 +40,6 @@ int processEvents(SDL_Window *window, Paddle *mypaddle)
 		}
 	}
 
-
-
 	const Uint8 *state = SDL_GetKeyboardState(NULL);
 	if (state[SDL_SCANCODE_W] && mypaddle->y > 0)
 	{
@@ -65,11 +61,5 @@ int processEvents(SDL_Window *window, Paddle *mypaddle)
 
 	return done;
 }
-
-
-
-
-
-
 
 #endif // !event_handler_h
