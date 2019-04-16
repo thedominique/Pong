@@ -8,14 +8,6 @@
 #include "server_handler.h"
 #include "event_handler.h"
 
-
-
-
-
-
-
-
-
 int main(int argc, char **argv)
 {
 
@@ -27,10 +19,9 @@ int main(int argc, char **argv)
 	UDPpacket *packet_receive;
 	int done;
 	
-
-
 	GameState gamestate;
 
+// make dyamic
 	gamestate.players[0].x = 0;
 	gamestate.players[0].y = WINDOW_HEIGHT / 2;
 	gamestate.players[0].w = PADDLE_WIDTH;
@@ -53,9 +44,9 @@ int main(int argc, char **argv)
 	/* Open a socket on random port */
 	client_socket = SDLNet_UDP_Open(2344);
 
+// make dynamic	
 	/* Resolve server name  */
 	SDLNet_ResolveHost(&ipaddress, "192.168.0.45", 1234);
-
 
 	/* Allocate memory for the packet */
 	packet_send = SDLNet_AllocPacket(512);
@@ -67,6 +58,7 @@ int main(int argc, char **argv)
 
 	SDL_Window *window;
 	SDL_Renderer *renderer;
+// store as constant	
 	Paddle mypaddle;
 	mypaddle.x = 30;
 	mypaddle.y = 30;
@@ -90,6 +82,7 @@ int main(int argc, char **argv)
 	long net_tick_interval = (1 / NET_TICK_RATE) * ticks_per_sec;
 
 	done = 0;
+ // insert condition istället för variabel	
 	while (!done)
 	{
 		long tick_t1 = SDL_GetPerformanceCounter();
@@ -110,11 +103,7 @@ int main(int argc, char **argv)
 
 		printf("gamestate ball.x: %lf\n", gamestate.ball.x);
 		printf("my paddle: x %lf\n", mypaddle.x);
-
-
-
-
-
+		
 		done = processEvents(window, &mypaddle);
 
 		if (tick_t1 >= next_net_tick)
@@ -138,13 +127,8 @@ int main(int argc, char **argv)
 			}
 
 			next_net_tick += net_tick_interval;
-		}
-
-
-
-		
+		}	
 	}
-
 
 	SDLNet_FreePacket(packet_send);
 	SDLNet_FreePacket(packet_receive);
