@@ -5,6 +5,8 @@
 #include <SDL.h>
 #include "objects.h"
 
+// make a .c file this is disgusting
+
 void detect_collision(GameState *gamestate)
 {
 	int i = 0;
