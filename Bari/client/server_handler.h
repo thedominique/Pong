@@ -3,9 +3,7 @@
 #define server_handler_h
 #include "objects.h"
 
-
-void receive_server_values(UDPpacket *packet_receive, GameState *gamestate)
-{
+void receive_server_values(UDPpacket *packet_receive, GameState *gamestate){
 	Receive *receive = (Receive *)packet_receive->data;
 
 	gamestate->ball.x = receive->b1.x;
@@ -17,9 +15,6 @@ void receive_server_values(UDPpacket *packet_receive, GameState *gamestate)
 	gamestate->players[1].x = receive->p[1].x;
 	gamestate->players[1].y = receive->p[1].y;
 }
-
-
-
 
 #endif // !server_handler_h
 
