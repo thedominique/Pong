@@ -8,19 +8,12 @@
 #include "SDL.h"
 #include "objects.h"
 
-
-
-
-
-
-void doRender(SDL_Renderer *renderer, GameState *gamestate, Paddle *mypaddle)
-{
+void doRender(SDL_Renderer *renderer, GameState *gamestate, Paddle *mypaddle){
 	//set the drawing color to blue
 	SDL_SetRenderDrawColor(renderer, 0, 0, 30, 255);
 
 	//Clear the screen (to blue)
 	SDL_RenderClear(renderer);
-
 
 	//set the drawing color to purple
 	SDL_SetRenderDrawColor(renderer, 75, 0, 130, 255);
@@ -41,9 +34,6 @@ void doRender(SDL_Renderer *renderer, GameState *gamestate, Paddle *mypaddle)
 	SDL_Rect ball = { gamestate->ball.x, gamestate->ball.y, gamestate->ball.w, gamestate->ball.h };
 	SDL_RenderFillRect(renderer, &ball);
 	SDL_RenderPresent(renderer);
-
-
 }
-
 
 #endif // !1
