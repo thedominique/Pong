@@ -23,29 +23,21 @@ typedef struct
 } Paddle;
 */
 
-typedef struct
-{
+typedef struct{
 	double x, y, h, w;
 } Paddle;
 
-
-
-typedef struct
-{
+typedef struct{
 	double x, y, h, w, xVel, yVel;
 } Ball;
 
-
-
-typedef struct
-{
+typedef struct{
 	Ball ball;
 	Paddle players[3];
 
 } GameState;
 
-typedef struct
-{
+typedef struct{
 	Ball b1;
 	Paddle p[3];
 } Receive;
