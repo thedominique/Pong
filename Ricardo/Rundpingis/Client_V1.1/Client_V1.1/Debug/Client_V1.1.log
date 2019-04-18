@@ -1,0 +1,14 @@
+﻿  main.c
+c:\projektarbete\client_v1.1\client_v1.1\rendering.h(21): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\projektarbete\client_v1.1\client_v1.1\rendering.h(21): warning C4244: 'initializing': conversion from 'const double' to 'int', possible loss of data
+c:\projektarbete\client_v1.1\client_v1.1\rendering.h(27): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\projektarbete\client_v1.1\client_v1.1\rendering.h(27): warning C4244: 'initializing': conversion from 'const double' to 'int', possible loss of data
+c:\projektarbete\client_v1.1\client_v1.1\rendering.h(34): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\projektarbete\client_v1.1\client_v1.1\main.c(13): warning C4026: function declared with formal parameter list
+c:\projektarbete\client_v1.1\client_v1.1\main.c(72): warning C4244: 'function': conversion from 'const double' to 'int', possible loss of data
+c:\projektarbete\client_v1.1\client_v1.1\main.c(73): warning C4244: 'function': conversion from 'const double' to 'int', possible loss of data
+c:\projektarbete\client_v1.1\client_v1.1\main.c(80): warning C4244: 'initializing': conversion from 'Uint64' to 'long', possible loss of data
+c:\projektarbete\client_v1.1\client_v1.1\main.c(81): warning C4244: 'initializing': conversion from 'Uint64' to 'long', possible loss of data
+c:\projektarbete\client_v1.1\client_v1.1\main.c(83): warning C4244: 'initializing': conversion from 'float' to 'long', possible loss of data
+c:\projektarbete\client_v1.1\client_v1.1\main.c(89): warning C4244: 'initializing': conversion from 'Uint64' to 'long', possible loss of data
+  Client_V1.1.vcxproj -> C:\Projektarbete\Client_V1.1\Debug\Client_V1.1.exe

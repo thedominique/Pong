@@ -1,0 +1,11 @@
+﻿  main.c
+c:\projektarbete\server_v1.1\server_v1.1\collision.h(27): warning C4013: 'resetState' undefined; assuming extern returning int
+c:\projektarbete\server_v1.1\server_v1.1\collision.h(40): warning C4013: 'collision_check' undefined; assuming extern returning int
+c:\projektarbete\server_v1.1\server_v1.1\main.c(16): warning C4026: function declared with formal parameter list
+c:\projektarbete\server_v1.1\server_v1.1\main.c(19): warning C4087: 'SDLNet_Init': declared with 'void' parameter list
+c:\projektarbete\server_v1.1\server_v1.1\main.c(62): warning C4244: 'initializing': conversion from 'Uint64' to 'long', possible loss of data
+c:\projektarbete\server_v1.1\server_v1.1\main.c(63): warning C4244: 'initializing': conversion from 'Uint64' to 'long', possible loss of data
+c:\projektarbete\server_v1.1\server_v1.1\main.c(65): warning C4244: 'initializing': conversion from 'float' to 'long', possible loss of data
+c:\projektarbete\server_v1.1\server_v1.1\main.c(71): warning C4244: 'initializing': conversion from 'Uint64' to 'long', possible loss of data
+c:\projektarbete\server_v1.1\server_v1.1\collision.h(96): warning C4716: 'resetState': must return a value
+  Server_V1.1.vcxproj -> C:\Projektarbete\Server_V1.1\Debug\Server_V1.1.exe
