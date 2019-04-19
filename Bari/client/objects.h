@@ -15,14 +15,6 @@ const double BALL_SPEED = 0.005;
 const double PADDLE_WIDTH = 40;
 const double PADDLE_HEIGHT = 200;
 
-
-/*
-typedef struct
-{
-	int x, y, h, w, xVel, yVel;
-} Paddle;
-*/
-
 typedef struct{
 	double x, y, h, w;
 } Paddle;
