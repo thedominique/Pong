@@ -17,18 +17,24 @@ int menu()
 	SDL_Window * window = SDL_CreateWindow("SDL2 Displaying Image", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, 0);
 	//Create render, surface and texture
 	SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	SDL_Surface * image = IMG_Load("mainmenu.jpg");
+	SDL_Surface * image = IMG_Load("mainmenu2.jpg");
+	SDL_Surface * image2 = IMG_Load("howto.jpg");
 	SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, image);
+	SDL_Texture * texture2 = SDL_CreateTextureFromSurface(renderer, image2);
 	//Add Image
 	//SDL_Rect dstrect = { 0, 0, 320, 240 };
 	//SDL_RenderCopy(renderer, texture, NULL, &dstrect);
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
 	//Create invisible buttons over play and exit, adds image
-	SDL_Rect box = { 290, 100, 470, 180 };
-	//SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);		//Test to see where rectangle is
-	//SDL_RenderFillRect(renderer, &box);
-	SDL_Rect box2 = { 270, 365, 300, 100 };
-	//SDL_RenderFillRect(renderer, &box2);
+	SDL_Rect playbox = { 290, 100, 470, 180 };
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);		//Test to see where rectangle is
+	//SDL_RenderFillRect(renderer, &playbox);			//Test to see rectangle
+	SDL_Rect howtobox = { 350, 345, 350, 100 };
+	//SDL_RenderFillRect(renderer, &howtobox);
+	SDL_Rect quitbox = { 320, 500, 200, 100 };
+	//SDL_RenderFillRect(renderer, &quitbox);
+	SDL_Rect backbox = { 470, 450, 270, 150 };
+	//SDL_RenderFillRect(renderer, &backbox);
 	SDL_RenderPresent(renderer);
 	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1)
 	{
@@ -55,20 +61,46 @@ int menu()
 				quit = 1;
 			}
 			if (evt.type == SDL_MOUSEBUTTONDOWN &&
-				evt.button.x >= box.x &&
-				evt.button.x <= (box.x + box.w) &&
-				evt.button.y >= box.y &&
-				evt.button.y <= (box.h + box.y))
+				evt.button.x >= playbox.x &&
+				evt.button.x <= (playbox.x + playbox.w) &&
+				evt.button.y >= playbox.y &&
+				evt.button.y <= (playbox.h + playbox.y))
 			{
 				IMG_Quit();
 				SDL_Quit();
 				return 1;
 			}
 			else if (evt.type == SDL_MOUSEBUTTONDOWN &&
-				evt.button.x >= box2.x &&
-				evt.button.x <= (box2.x + box2.w) &&
-				evt.button.y >= box2.y &&
-				evt.button.y <= (box2.h + box2.y))
+				evt.button.x >= howtobox.x &&
+				evt.button.x <= (howtobox.x + howtobox.w) &&
+				evt.button.y >= howtobox.y &&
+				evt.button.y <= (howtobox.h + howtobox.y))
+			{
+				int waitresponse = 1;
+				SDL_RenderCopy(renderer, texture2, NULL, NULL);
+				SDL_RenderPresent(renderer);
+				while (waitresponse)
+				{
+					while (SDL_PollEvent(&evt))
+					{
+						if (evt.type == SDL_MOUSEBUTTONDOWN &&
+							evt.button.x >= backbox.x &&
+							evt.button.x <= (backbox.x + backbox.w) &&
+							evt.button.y >= backbox.y &&
+							evt.button.y <= (backbox.h + backbox.y))
+						{
+							SDL_RenderCopy(renderer, texture, NULL, NULL);
+							SDL_RenderPresent(renderer);
+							waitresponse = 0;
+						}
+					}	
+				}
+			}
+			else if (evt.type == SDL_MOUSEBUTTONDOWN &&
+				evt.button.x >= quitbox.x &&
+				evt.button.x <= (quitbox.x + quitbox.w) &&
+				evt.button.y >= quitbox.y &&
+				evt.button.y <= (quitbox.h + quitbox.y))
 			{
 				IMG_Quit();
 				SDL_Quit();
