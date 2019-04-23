@@ -10,23 +10,22 @@
 #include "SDL_image.h"
 #include "SDL_ttf.h"
 #include "display_text.h"
-
-
-
-
+#include "mainmenu.h"
 
 int main(int argc, char **argv)
 {
-
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDLNet_Init();
 	UDPsocket client_socket;
 	IPaddress ipaddress;
 	UDPpacket *packet_send;
 	UDPpacket *packet_receive;
-	
 
-
+	int choice = menu();
+	if (choice == 2)
+	{
+		return 0;
+	}
 	GameState gamestate;
 
 	gamestate.players[0].x = 0;
@@ -70,7 +69,7 @@ int main(int argc, char **argv)
 	oldLives.player1Lives = gamestate.players[0].lives = 3;
 	oldLives.player2Lives = gamestate.players[1].lives = 3;
 	oldLives.player3Lives = gamestate.players[2].lives = 3;
-	strcpy(oldLives.purple,"purple");
+	strcpy(oldLives.purple, "purple");
 	strcpy(oldLives.red, "red");
 	strcpy(oldLives.yellow, "yellow");
 	strcpy(oldLives.lives, "Lives");
@@ -81,8 +80,7 @@ int main(int argc, char **argv)
 	client_socket = SDLNet_UDP_Open(2344);
 
 	/* Resolve server name  */
-	SDLNet_ResolveHost(&ipaddress, "localhost", 1234);
-
+	SDLNet_ResolveHost(&ipaddress, "130.229.185.66", 1234);
 
 	/* Allocate memory for the packet */
 	packet_send = SDLNet_AllocPacket(512);
@@ -109,7 +107,6 @@ int main(int argc, char **argv)
 		0                                  // flags
 	);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-	
 
 	//HANTERAR BILD (BORDET)
 	IMG_Init(IMG_INIT_JPG);
@@ -124,14 +121,10 @@ int main(int argc, char **argv)
 	}
 	board = SDL_CreateTextureFromSurface(renderer, boardSurface);
 	SDL_FreeSurface(boardSurface);
-	
 
+	SDL_Texture *text = init_text(&gamestate, renderer);
 
-
-
-	SDL_Texture *text =init_text(&gamestate, renderer);
-	
-	int done=0;
+	int done = 0;
 	int i = 0;
 	long ticks_per_sec = SDL_GetPerformanceFrequency();
 	long tick_t0 = SDL_GetPerformanceCounter();
@@ -143,7 +136,6 @@ int main(int argc, char **argv)
 		long tick_t1 = SDL_GetPerformanceCounter();
 		double dt = (tick_t1 - tick_t0) / (double)ticks_per_sec;
 
-
 		if (SDLNet_UDP_Recv(client_socket, packet_receive))
 		{
 			Receive *receive = (Receive *)packet_receive->data;
@@ -152,56 +144,40 @@ int main(int argc, char **argv)
 			receive_server_values(packet_receive, &gamestate);
 		}
 
-		//update texten OM det har skett någon skillnad
+		//update texten OM det har skett nÃ¥gon skillnad
 		if (compare_lives(&gamestate, &oldLives))
 		{
 			printf("YES");
 			text = update_text(&gamestate, renderer, &oldLives);
 		}
-
-
-
-	
 		//printf("Lives player 0: %d\n", gamestate.players[0].lives);
 		//Render display
 
 		doRender(renderer, &gamestate, &mypaddle, board, text);
 
-
 		//printf("gamestate ball.x: %lf\n", gamestate.ball.x);
 		//printf("my paddle: x %lf\n", mypaddle.x);
-
-
-
-
 
 		done = processEvents(window, &mypaddle, dt);
 		if (tick_t1 >= next_net_tick)
 		{
 			for (i = 0; i < 4; i++)
 			{
-
 				packet_send->data = (void*)&mypaddle;
 				packet_send->channel = -1;
 				packet_send->len = sizeof(mypaddle);
-				packet_send->maxlen = packet_send->len+20;
+				packet_send->maxlen = packet_send->len + 20;
 				packet_send->address = ipaddress;
 				//printf("TRIED TO SEND: %d\n", gamestate.ball.x);
-
 
 				if (SDLNet_UDP_Send(client_socket, -1, packet_send) == 0)
 				{
 					printf("failed to send from client/n");
 				}
-
 			}
 
 			next_net_tick += net_tick_interval;
 		}
-		
-
-
-		
 	}
 
 	SDL_DestroyTexture(board);
