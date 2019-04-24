@@ -5,3 +5,5 @@
 
 
 void identify_player(UDPpacket *packet_receive, IPaddress client_ipaddress[], GameState *gamestate);
+
+#endif // !collision_h
