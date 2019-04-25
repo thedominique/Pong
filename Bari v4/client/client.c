@@ -11,10 +11,7 @@
 #include "SDL_ttf.h"
 #include "display_text.h"
 
-
-int main(int argc, char **argv)
-{
-
+int main(int argc, char **argv){
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDLNet_Init();
 	UDPsocket client_socket;
@@ -22,8 +19,11 @@ int main(int argc, char **argv)
 	UDPpacket *packet_send;
 	UDPpacket *packet_receive;
 
-
-
+	int choice = menu();
+	if (choice == 2){
+		return 0;
+	}
+	
 	GameState gamestate;
 
 	gamestate.players[0].x = 0;
@@ -80,14 +80,9 @@ int main(int argc, char **argv)
 	/* Resolve server name  */
 	SDLNet_ResolveHost(&ipaddress, "localhost", 1234);
 
-
 	/* Allocate memory for the packet */
 	packet_send = SDLNet_AllocPacket(512);
 	packet_receive = SDLNet_AllocPacket(512);
-	//printf("Fill the buffer\n>");
-	//scanf("%s", (char *)packet->data);
-	//packet_send->len = strlen((char *)packet_send->data) + 1;
-	//packet_receive->len = strlen((char *)packet_send->data) + 1;
 
 	SDL_Window *window;
 	SDL_Renderer *renderer;
@@ -115,8 +110,7 @@ int main(int argc, char **argv)
 	SDL_Texture *board;
 	SDL_Surface *boardSurface = NULL;
 	boardSurface = IMG_Load("bana.jpg");
-	if (boardSurface == NULL)
-	{
+	if (boardSurface == NULL){
 		printf("Could not find image! \n");
 		SDL_Quit();
 		return 1;
@@ -133,14 +127,11 @@ int main(int argc, char **argv)
 	long next_net_tick = tick_t0;
 	long net_tick_interval = (1 / NET_TICK_RATE) * ticks_per_sec;
 
-	while (!done)
-	{
+	while (!done){
 		long tick_t1 = SDL_GetPerformanceCounter();
 		double dt = (tick_t1 - tick_t0) / (double)ticks_per_sec;
 
-
-		if (SDLNet_UDP_Recv(client_socket, packet_receive))
-		{
+		if (SDLNet_UDP_Recv(client_socket, packet_receive)){
 			Receive *receive = (Receive *)packet_receive->data;
 			//printf("RECEIVED: %lf\n", receive->b1.x);
 			//printf("gamestate player[0].x: %lf\n", gamestate.players[0].x);
@@ -148,48 +139,30 @@ int main(int argc, char **argv)
 		}
 
 		//update texten OM det har skett någon skillnad
-		if (compare_lives(&gamestate, &oldLives))
-		{
+		if (compare_lives(&gamestate, &oldLives)){
 			printf("YES");
 			text = update_text(&gamestate, renderer, &oldLives);
 		}
 
-
-
-		//printf("Lives player 0: %d\n", gamestate.players[0].lives);
 		//Render display
-
 		doRender(renderer, &gamestate, &mypaddle, board, text);
-
-		//printf("gamestate ball.x: %lf\n", gamestate.ball.x);
-		//printf("my paddle: x %lf\n", mypaddle.x);
-
+		
 		done = processEvents(window, &mypaddle, dt);
-		if (tick_t1 >= next_net_tick)
-		{
-			for (i = 0; i < 4; i++)
-			{
-
+		if (tick_t1 >= next_net_tick){
+			for (i = 0; i < 4; i++){
 				packet_send->data = (void*)&mypaddle;
 				packet_send->channel = -1;
 				packet_send->len = sizeof(mypaddle);
 				packet_send->maxlen = packet_send->len + 20;
 				packet_send->address = ipaddress;
-				//printf("TRIED TO SEND: %d\n", gamestate.ball.x);
-
-
-				if (SDLNet_UDP_Send(client_socket, -1, packet_send) == 0)
-				{
+				
+				if (SDLNet_UDP_Send(client_socket, -1, packet_send) == 0){
 					printf("failed to send from client/n");
 				}
-
 			}
-
 			next_net_tick += net_tick_interval;
 		}
-
 	}
-
 	SDL_DestroyTexture(board);
 	SDLNet_FreePacket(packet_send);
 	SDLNet_FreePacket(packet_receive);
