@@ -1,4 +1,3 @@
-#pragma once
 #ifndef player_handler_h
 #define player_handler_h
 #include "objects.h"
