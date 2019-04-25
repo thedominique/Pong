@@ -1,4 +1,3 @@
-#pragma once
 #ifndef objects_h
 #define objects_h
 #include <stdio.h>
