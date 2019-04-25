@@ -19,6 +19,11 @@ int main(int argc, char **argv){
 	UDPpacket *packet_send;
 	UDPpacket *packet_receive;
 
+	int choice = menu();
+	if (choice == 2){
+		return 0;
+	}
+	
 	GameState gamestate;
 
 	gamestate.players[0].x = 0;
