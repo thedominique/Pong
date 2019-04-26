@@ -8,11 +8,12 @@
 #include "objects.h"
 #include "SDL_ttf.h"
 
-
 int compare_lives(GameState *gamestate, OldLives *oldlives);
 
 SDL_Texture *update_text(GameState *gamestate, SDL_Renderer *renderer, OldLives *oldLives);
 
 SDL_Texture* init_text(GameState *gamestate, SDL_Renderer *renderer);
 
-#endif // !display_text_h
+SDL_Texture* nextRoundText(SDL_Renderer *renderer);
+
+#endif // !display_text_h 
