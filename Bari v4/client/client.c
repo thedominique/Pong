@@ -10,8 +10,9 @@
 #include "SDL_image.h"
 #include "SDL_ttf.h"
 #include "display_text.h"
+#include "init_master.h"
 
-int main(int argc, char **argv){
+int main(int argc, char **argv) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDLNet_Init();
 	UDPsocket client_socket;
@@ -20,57 +21,15 @@ int main(int argc, char **argv){
 	UDPpacket *packet_receive;
 
 	int choice = menu();
-	if (choice == 2){
+	if (choice == 2) {
 		return 0;
 	}
-	
+
 	GameState gamestate;
-
-	gamestate.players[0].x = 0;
-	gamestate.players[0].y = WINDOW_HEIGHT / 2;
-	gamestate.players[0].w = PADDLE_WIDTH;
-	gamestate.players[0].h = PADDLE_HEIGHT;
-	gamestate.players[0].redShade = 75;
-	gamestate.players[0].greenShade = 0;
-	gamestate.players[0].blueShade = 130;
-	gamestate.players[0].lives = 3;
-
-	gamestate.players[1].x = WINDOW_WIDTH - PADDLE_WIDTH;
-	gamestate.players[1].y = WINDOW_HEIGHT / 2;
-	gamestate.players[1].w = PADDLE_WIDTH;
-	gamestate.players[1].h = PADDLE_HEIGHT;
-	gamestate.players[1].redShade = 255;
-	gamestate.players[1].greenShade = 0;
-	gamestate.players[1].blueShade = 0;
-	gamestate.players[1].lives = 3;
-
-	gamestate.players[2].x = 0;
-	gamestate.players[2].y = 0;
-	gamestate.players[2].w = PADDLE_WIDTH;
-	gamestate.players[2].h = PADDLE_HEIGHT;
-	gamestate.players[2].redShade = 248;
-	gamestate.players[2].greenShade = 255;
-	gamestate.players[2].blueShade = 11;
-	gamestate.players[2].lives = 3;
-
-	gamestate.ball.x = WINDOW_WIDTH / 2;
-	gamestate.ball.y = WINDOW_HEIGHT / 2;
-	gamestate.ball.h = BALL_SIZE;
-	gamestate.ball.w = BALL_SIZE;
-	gamestate.ball.xVel = BALL_SPEED;
-	gamestate.ball.yVel = BALL_SPEED;
-	gamestate.ball.redShade = 75;
-	gamestate.ball.greenShade = 0;
-	gamestate.ball.blueShade = 130;
-
 	OldLives oldLives;
-	oldLives.player1Lives = gamestate.players[0].lives = 3;
-	oldLives.player2Lives = gamestate.players[1].lives = 3;
-	oldLives.player3Lives = gamestate.players[2].lives = 3;
-	strcpy(oldLives.purple, "purple");
-	strcpy(oldLives.red, "red");
-	strcpy(oldLives.yellow, "yellow");
-	strcpy(oldLives.lives, "Lives");
+
+	// Init players and ball variables. Borde heta initObjects *shrug*
+	initPlayers(&gamestate, &oldLives);
 
 	float NET_TICK_RATE = 30;
 
@@ -87,7 +46,7 @@ int main(int argc, char **argv){
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 	Paddle mypaddle;
-	mypaddle.x = 30;
+	mypaddle.x = WINDOW_WIDTH/2;
 	mypaddle.y = 30;
 	mypaddle.h = PADDLE_HEIGHT;
 	mypaddle.w = PADDLE_WIDTH;
@@ -110,7 +69,7 @@ int main(int argc, char **argv){
 	SDL_Texture *board;
 	SDL_Surface *boardSurface = NULL;
 	boardSurface = IMG_Load("bana.jpg");
-	if (boardSurface == NULL){
+	if (boardSurface == NULL) {
 		printf("Could not find image! \n");
 		SDL_Quit();
 		return 1;
@@ -127,36 +86,36 @@ int main(int argc, char **argv){
 	long next_net_tick = tick_t0;
 	long net_tick_interval = (1 / NET_TICK_RATE) * ticks_per_sec;
 
-	while (!done){
+	while (!done) {
 		long tick_t1 = SDL_GetPerformanceCounter();
 		double dt = (tick_t1 - tick_t0) / (double)ticks_per_sec;
 
-		if (SDLNet_UDP_Recv(client_socket, packet_receive)){
+		if (SDLNet_UDP_Recv(client_socket, packet_receive)) {
 			Receive *receive = (Receive *)packet_receive->data;
 			//printf("RECEIVED: %lf\n", receive->b1.x);
 			//printf("gamestate player[0].x: %lf\n", gamestate.players[0].x);
 			receive_server_values(packet_receive, &gamestate);
 		}
-
 		//update texten OM det har skett någon skillnad
-		if (compare_lives(&gamestate, &oldLives)){
-			printf("YES");
+		if (compare_lives(&gamestate, &oldLives)) {
+
+			nextRound(renderer, &gamestate, text, &mypaddle, board);
+
 			text = update_text(&gamestate, renderer, &oldLives);
 		}
-
 		//Render display
 		doRender(renderer, &gamestate, &mypaddle, board, text);
-		
+
 		done = processEvents(window, &mypaddle, dt);
-		if (tick_t1 >= next_net_tick){
-			for (i = 0; i < 4; i++){
+		if (tick_t1 >= next_net_tick) {
+			for (i = 0; i < 4; i++) {
 				packet_send->data = (void*)&mypaddle;
 				packet_send->channel = -1;
 				packet_send->len = sizeof(mypaddle);
 				packet_send->maxlen = packet_send->len + 20;
 				packet_send->address = ipaddress;
-				
-				if (SDLNet_UDP_Send(client_socket, -1, packet_send) == 0){
+
+				if (SDLNet_UDP_Send(client_socket, -1, packet_send) == 0) {
 					printf("failed to send from client/n");
 				}
 			}
