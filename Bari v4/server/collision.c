@@ -1,6 +1,5 @@
 #include "collision.h"
 
-
 void next_color_after_death(GameState *gamestate)
 {
 	int i;
@@ -15,6 +14,7 @@ void next_color_after_death(GameState *gamestate)
 			return;
 		}
 	}
+
 }
 
 
@@ -29,13 +29,16 @@ void kill_player(GameState *gamestate)
 }
 
 
-void collision_with_paddles(GameState *gamestate, int i) {
+void collision_with_paddles(GameState *gamestate, int i) 
+{
 	gamestate->ball.x = gamestate->ball.x + gamestate->ball.xVel;
 
-	if (collision_check(gamestate, i) && equal_color(gamestate, i)) {
+	if (collision_check(gamestate, i) && equal_color(gamestate, i)) 
+	{
 		gamestate->ball.x = gamestate->ball.x - gamestate->ball.xVel + negativ_or_positiv(gamestate->ball.xVel);
 		gamestate->ball.xVel = -gamestate->ball.xVel;
 		give_next_color(gamestate, i);
+		increase_ball_speed(gamestate);
 	}
 
 	gamestate->ball.y = gamestate->ball.y + gamestate->ball.yVel;
@@ -44,23 +47,28 @@ void collision_with_paddles(GameState *gamestate, int i) {
 		gamestate->ball.y = gamestate->ball.y - gamestate->ball.yVel + negativ_or_positiv(gamestate->ball.yVel);
 		gamestate->ball.yVel = -gamestate->ball.yVel;
 		give_next_color(gamestate, i);
+		increase_ball_speed(gamestate);
+
 	}
 }
 
 int collision_check(GameState *gamestate, int i) {
-	if (gamestate->ball.y >= gamestate->players[i].y + gamestate->players[i].h) {
+	if (gamestate->ball.y >= gamestate->players[i].y + gamestate->players[i].h) 
+	{
 		return 0;
 	}
-	if (gamestate->ball.x >= gamestate->players[i].x + gamestate->players[i].w) {
+	if (gamestate->ball.x >= gamestate->players[i].x + gamestate->players[i].w)
+	{
 		return 0;
 	}
-	if (gamestate->ball.y + gamestate->ball.h <= gamestate->players[i].y) {
+	if (gamestate->ball.y + gamestate->ball.h <= gamestate->players[i].y) 
+	{
 		return 0;
 	}
-	if (gamestate->ball.x + gamestate->ball.w <= gamestate->players[i].x) {
+	if (gamestate->ball.x + gamestate->ball.w <= gamestate->players[i].x)
+	{
 		return 0;
 	}
-
 	return 1;
 }
 
@@ -99,7 +107,6 @@ void detect_collision(GameState *gamestate)
 				kill_player(gamestate);
 			}
 		}
-		//gamestate->ball.xVel = -gamestate->ball.xVel;
 	}
 
 
@@ -109,6 +116,38 @@ void detect_collision(GameState *gamestate)
 		collision_with_paddles(gamestate, i);
 	}
 
+
+}
+
+
+void increase_ball_speed(GameState *gamestate)
+{
+	if (gamestate->ball.xVel> 0)
+	{
+		gamestate->ball.xVel += BALL_SPEED;
+		if (gamestate->ball.yVel > 0)
+		{
+			gamestate->ball.yVel += BALL_SPEED;
+		}
+		else 
+		{
+			gamestate->ball.yVel -= BALL_SPEED;
+		}
+		return;
+	}
+	if (gamestate->ball.xVel < 0)
+	{
+		gamestate->ball.xVel -= BALL_SPEED;
+		if (gamestate->ball.yVel > 0)
+		{
+			gamestate->ball.yVel += BALL_SPEED;
+		}
+		else
+		{
+			gamestate->ball.yVel -= BALL_SPEED;
+		}
+		return;
+	}
 
 }
 
@@ -146,7 +185,7 @@ bool equal_color(GameState *gamestate, int i) {
 }
 
 void give_next_color(GameState *gamestate, int i) {
-	if (i == gamestate->playerCounter - 1) 
+	if (i == gamestate->playerCounter - 1 && gamestate->players[0].lives !=0) 
 	{
 		gamestate->ball.redShade = 75;
 		gamestate->ball.greenShade = 0;
