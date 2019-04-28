@@ -2,9 +2,6 @@
 #define event_handler_h
 #include "objects.h"
 
-
-int collision_check(Paddle *mypaddle);
-
 int processEvents(SDL_Window *window, Paddle *mypaddle, double dt);
 
 #endif // !event_handler_h
