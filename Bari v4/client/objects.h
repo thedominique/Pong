@@ -11,17 +11,17 @@
 static const double BALL_SIZE = 20;
 static const double WINDOW_WIDTH = 1280;
 static const double WINDOW_HEIGHT = 720;
-static const double BALL_SPEED = 0.006;
+static const double BALL_SPEED = 0.00009;
 static const double PADDLE_WIDTH = 20;
 static const double PADDLE_HEIGHT = 100;
-static const double PADDLE_SPEED = 3;
+static const double PADDLE_SPEED = 2;
 
-/*
+
+
 typedef struct
 {
-	int x, y, h, w, xVel, yVel;
-} Paddle;
-*/
+	int w, s, a, d,up,down;
+} Keys;
 
 typedef struct
 {
@@ -38,7 +38,9 @@ typedef struct
 	double x, y, h, w;
 	int redShade, greenShade, blueShade;
 	int lives;
+	Keys k;
 } Paddle;
+
 
 
 
