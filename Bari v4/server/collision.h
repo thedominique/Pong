@@ -15,6 +15,6 @@ void give_next_color(GameState *gamestate, int i);
 void resetState(GameState* gamestate);
 void kill_player(GameState *gamestate);
 void next_color_after_death(GameState *gamestate);
-
+void increase_ball_speed(GameState *gamestate);
 
 #endif // !collision_h
