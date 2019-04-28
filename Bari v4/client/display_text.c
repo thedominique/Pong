@@ -25,7 +25,7 @@ SDL_Texture *update_text(GameState *gamestate, SDL_Renderer *renderer, OldLives 
 		printf("TTF open error");
 	}
 	//reset msg =0;
-	sprintf(oldLives->msg, "%s: %s %d %s %d %s %d", oldLives->lives, oldLives->purple , gamestate->players[0].lives, oldLives->red, gamestate->players[1].lives, oldLives->yellow, gamestate->players[2].lives);
+	sprintf(oldLives->msg, "%s: %s %d %s %d %s %d", oldLives->lives, oldLives->purple, gamestate->players[0].lives, oldLives->red, gamestate->players[1].lives, oldLives->yellow, gamestate->players[2].lives);
 
 
 	SDL_Color color = { 255,255,255,255 };
