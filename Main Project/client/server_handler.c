@@ -1,10 +1,17 @@
 #include "server_handler.h"
+#include "soundeffect.h"
 
-void receive_server_values(UDPpacket *packet_receive, GameState *gamestate) {
+void receive_server_values(UDPpacket *packet_receive, GameState *gamestate, sound *soundeffect) {
 	Receive *receive = (Receive *)packet_receive->data;
 
 	gamestate->ball.x = receive->b1.x;
 	gamestate->ball.y = receive->b1.y;
+	gamestate->ball.collision = receive->b1.collision;
+	if (gamestate->ball.collision == 1) {
+		printf("%d", gamestate->ball.collision);
+		soundeffect->channel = Mix_PlayChannel(3, soundeffect->soundeffect, 0);
+		gamestate->ball.collision = 0;
+	}
 
 	gamestate->players[0].x = receive->p[0].x;
 	gamestate->players[0].y = receive->p[0].y;
