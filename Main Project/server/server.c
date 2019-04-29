@@ -24,6 +24,7 @@ int main(int argc, char **argv)
 
 	GameState gamestate;
 	gamestate.playerCounter = 0;
+	gamestate.ball.collision = 0;
 
 	gamestate.players[0].x = 30;
 	gamestate.players[0].y = WINDOW_HEIGHT / 2;
@@ -64,7 +65,7 @@ int main(int argc, char **argv)
 
 	for (i = 0; i < 3; i++)
 	{
-		gamestate.keys[i].up=0;
+		gamestate.keys[i].up = 0;
 		gamestate.keys[i].down = 0;
 	}
 
@@ -110,8 +111,8 @@ int main(int argc, char **argv)
 
 		//HANTERAR COLLISION OCH KEY PRESSES
 		key_handler(&gamestate);
-		
-		
+
+
 		detect_collision(&gamestate);
 
 		if (tick_t1 >= next_net_tick)
@@ -125,26 +126,27 @@ int main(int argc, char **argv)
 					packet_send->data = (void*)&gamestate;
 					packet_send->channel = -1;
 					packet_send->len = sizeof(gamestate);
-					packet_send->maxlen = packet_send->len+20;
+					packet_send->maxlen = packet_send->len + 20;
 
-					
+
 					packet_send->address.host = client_ipaddress[i].host;
 					packet_send->address.port = client_ipaddress[i].port;
 
 
-					if (SDLNet_UDP_Send(server_socket, -1, packet_send)==0)
+					if (SDLNet_UDP_Send(server_socket, -1, packet_send) == 0)
 					{
 						printf("failed to send from server/n");
 					}
+					gamestate.ball.collision = 0;
 
 				}
 
 			}
 			next_net_tick += net_tick_interval;
-			
+
 		}
 
-		
+
 
 	}
 
