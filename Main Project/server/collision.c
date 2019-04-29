@@ -29,14 +29,15 @@ void kill_player(GameState *gamestate)
 }
 
 
-void collision_with_paddles(GameState *gamestate, int i) 
+void collision_with_paddles(GameState *gamestate, int i)
 {
 	gamestate->ball.x = gamestate->ball.x + gamestate->ball.xVel;
 
-	if (collision_check(gamestate, i) && equal_color(gamestate, i)) 
+	if (collision_check(gamestate, i) && equal_color(gamestate, i))
 	{
 		gamestate->ball.x = gamestate->ball.x - gamestate->ball.xVel + negativ_or_positiv(gamestate->ball.xVel);
 		gamestate->ball.xVel = -gamestate->ball.xVel;
+		gamestate->ball.collision = 1;
 		give_next_color(gamestate, i);
 		increase_ball_speed(gamestate);
 	}
@@ -46,6 +47,7 @@ void collision_with_paddles(GameState *gamestate, int i)
 	if (collision_check(gamestate, i) && equal_color(gamestate, i)) {
 		gamestate->ball.y = gamestate->ball.y - gamestate->ball.yVel + negativ_or_positiv(gamestate->ball.yVel);
 		gamestate->ball.yVel = -gamestate->ball.yVel;
+		gamestate->ball.collision = 1;
 		give_next_color(gamestate, i);
 		increase_ball_speed(gamestate);
 
@@ -53,7 +55,7 @@ void collision_with_paddles(GameState *gamestate, int i)
 }
 
 int collision_check(GameState *gamestate, int i) {
-	if (gamestate->ball.y >= gamestate->players[i].y + gamestate->players[i].h) 
+	if (gamestate->ball.y >= gamestate->players[i].y + gamestate->players[i].h)
 	{
 		return 0;
 	}
@@ -61,7 +63,7 @@ int collision_check(GameState *gamestate, int i) {
 	{
 		return 0;
 	}
-	if (gamestate->ball.y + gamestate->ball.h <= gamestate->players[i].y) 
+	if (gamestate->ball.y + gamestate->ball.h <= gamestate->players[i].y)
 	{
 		return 0;
 	}
@@ -79,10 +81,12 @@ void detect_collision(GameState *gamestate)
 	if (gamestate->ball.y >= WINDOW_HEIGHT / 2 + WINDOW_HEIGHT / 4 - gamestate->ball.h)
 	{
 		gamestate->ball.yVel = -gamestate->ball.yVel;
+		gamestate->ball.collision = 1;
 	}
 	if (gamestate->ball.y <= WINDOW_HEIGHT / 4)
 	{
 		gamestate->ball.yVel = -gamestate->ball.yVel;
+		gamestate->ball.collision = 1;
 	}
 	if (gamestate->ball.x >= WINDOW_WIDTH / 2 + WINDOW_WIDTH / 4 - gamestate->ball.h)
 	{
@@ -122,14 +126,14 @@ void detect_collision(GameState *gamestate)
 
 void increase_ball_speed(GameState *gamestate)
 {
-	if (gamestate->ball.xVel> 0)
+	if (gamestate->ball.xVel > 0)
 	{
 		gamestate->ball.xVel += BALL_SPEED;
 		if (gamestate->ball.yVel > 0)
 		{
 			gamestate->ball.yVel += BALL_SPEED;
 		}
-		else 
+		else
 		{
 			gamestate->ball.yVel -= BALL_SPEED;
 		}
@@ -185,14 +189,14 @@ bool equal_color(GameState *gamestate, int i) {
 }
 
 void give_next_color(GameState *gamestate, int i) {
-	if (i == gamestate->playerCounter - 1 && gamestate->players[0].lives !=0) 
+	if (i == gamestate->playerCounter - 1 && gamestate->players[0].lives != 0)
 	{
 		gamestate->ball.redShade = 75;
 		gamestate->ball.greenShade = 0;
 		gamestate->ball.blueShade = 130;
 		return;
 	}
-	else if(gamestate->players[i + 1].lives !=0)
+	else if (gamestate->players[i + 1].lives != 0)
 	{
 		gamestate->ball.redShade = gamestate->players[i + 1].redShade;
 		gamestate->ball.greenShade = gamestate->players[i + 1].greenShade;
