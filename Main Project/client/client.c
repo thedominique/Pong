@@ -12,7 +12,7 @@
 #include "display_text.h"
 #include "create_texture.h"
 #include "init_master.h"
-
+#include "soundeffect.h"
 
 int main(int argc, char **argv) {
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -22,26 +22,26 @@ int main(int argc, char **argv) {
 	UDPpacket *packet_send;
 	UDPpacket *packet_receive;
 
-	
+
 	int choice = menu();
 	if (choice == 2) {
 		return 0;
 	}
-	
+
 
 	GameState gamestate;
 	Paddle mypaddle;
 	OldLives oldLives;
 	initPlayers(&gamestate, &oldLives, &mypaddle);
-	
-	
+
+
 	float NET_TICK_RATE = 60;
 
 	/* Open a socket on random port */
 	client_socket = SDLNet_UDP_Open(2317);
 
 	/* Resolve server name  */
-	SDLNet_ResolveHost(&ipaddress, "localhost", 1234);
+	SDLNet_ResolveHost(&ipaddress, "130.229.183.221", 1234);
 
 	/* Allocate memory for the packet */
 	packet_send = SDLNet_AllocPacket(512);
@@ -68,9 +68,12 @@ int main(int argc, char **argv) {
 	SDL_Texture *player1Texture = init_player1_texture(renderer);
 	SDL_Texture *player2Texture = init_player2_texture(renderer);
 	SDL_Texture *player3Texture = init_player3_texture(renderer);
-	
+
 	//TEXT TEXTURES
 	SDL_Texture *text = init_text(&gamestate, renderer);
+
+	sound soundeffect;
+	initsound(&soundeffect);
 
 	int done = 0;
 	int i = 0;
@@ -87,19 +90,19 @@ int main(int argc, char **argv) {
 			Receive *receive = (Receive *)packet_receive->data;
 			//printf("RECEIVED: %lf\n", receive->b1.x);
 			//printf("gamestate player[0].x: %lf\n", gamestate.players[0].x);
-			receive_server_values(packet_receive, &gamestate);
+			receive_server_values(packet_receive, &gamestate, &soundeffect);
 		}
 
-		//update texten OM det har skett någon skillnad
+		//update texten OM det har skett nÃ¥gon skillnad
 		if (compare_lives(&gamestate, &oldLives)) {
 			printf("YES");
 
 			text = update_text(&gamestate, renderer, &oldLives);
-			
+
 		}
 
 		//Render display
-		doRender(renderer, &gamestate, &mypaddle, board, text, player1Texture,player2Texture, player3Texture);
+		doRender(renderer, &gamestate, &mypaddle, board, text, player1Texture, player2Texture, player3Texture);
 
 		done = processEvents(window, &mypaddle, dt, &gamestate);
 		if (tick_t1 >= next_net_tick) {
@@ -116,7 +119,7 @@ int main(int argc, char **argv) {
 			}
 			next_net_tick += net_tick_interval;
 		}
-		//RESET KEYS TILL NÄSTA LOOP OMGÅNG
+		//RESET KEYS TILL NÃ„STA LOOP OMGÃ…NG
 		reset_keys(&mypaddle);
 	}
 	SDLNet_FreePacket(packet_send);
