@@ -25,7 +25,7 @@ typedef struct
 */
 typedef struct
 {
-	int w, s, a, d,up,down;
+	int w, s, a, d, up, down;
 } Keys;
 
 
@@ -43,6 +43,7 @@ typedef struct
 {
 	double x, y, h, w, xVel, yVel;
 	int redShade, greenShade, blueShade;
+	int collision;
 } Ball;
 
 
@@ -63,4 +64,3 @@ typedef struct
 } Receive;
 
 #endif // !objects_h
-
