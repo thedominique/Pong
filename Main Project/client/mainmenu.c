@@ -7,9 +7,8 @@
 #include <string.h>
 #include <SDL_mixer.h>
 
-int menu()
-{
-	Mix_Music *music = NULL;	//Låt som används
+int menu(){
+	Mix_Music *music = NULL;	//LÃ¥t som anvÃ¤nds
 	SDL_Event event;
 
 	IMG_Init(IMG_INIT_JPG);
@@ -24,37 +23,39 @@ int menu()
 	SDL_Texture * texture2 = SDL_CreateTextureFromSurface(renderer, image2);
 	//Add Image
 	//SDL_Rect dstrect = { 0, 0, 320, 240 };
+	
 	//SDL_RenderCopy(renderer, texture, NULL, &dstrect);
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
+	
 	//Create invisible buttons over play and exit, adds image
 	SDL_Rect playbox = { 290, 100, 470, 180 };
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);		//Test to see where rectangle is
+	
 	//SDL_RenderFillRect(renderer, &playbox);			//Test to see rectangle
 	SDL_Rect howtobox = { 350, 345, 350, 100 };
+	
 	//SDL_RenderFillRect(renderer, &howtobox);
 	SDL_Rect quitbox = { 320, 500, 200, 100 };
+	
 	//SDL_RenderFillRect(renderer, &quitbox);
 	SDL_Rect backbox = { 470, 450, 270, 150 };
+	
 	//SDL_RenderFillRect(renderer, &backbox);
 	SDL_RenderPresent(renderer);
-	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1)
-	{
+	if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1){
 		printf("FALSE audio failed open: %s", SDL_GetError());
 	}
 	music = Mix_LoadWAV("MenuMus.wav");
-	if (music == NULL)
-	{
+	if (music == NULL){
 		printf("Music failed to load %s", SDL_GetError());
 	}
 	int channel = Mix_PlayChannel(-1, music, -1);
 
 	int quit = 0;
 	//Event handling, close window and button press
-	while (!quit)
-	{
+	while (!quit){
 		SDL_Event evt;
-		while (SDL_PollEvent(&evt))
-		{
+		while (SDL_PollEvent(&evt)){
 			// quit on close, window close, or 'escape' key hit
 			if (evt.type == SDL_QUIT ||
 				(evt.type == SDL_WINDOWEVENT && evt.window.event == SDL_WINDOWEVENT_CLOSE) ||
@@ -65,8 +66,7 @@ int menu()
 				evt.button.x >= playbox.x &&
 				evt.button.x <= (playbox.x + playbox.w) &&
 				evt.button.y >= playbox.y &&
-				evt.button.y <= (playbox.h + playbox.y))
-			{
+				evt.button.y <= (playbox.h + playbox.y)){
 				IMG_Quit();
 				SDL_Quit();
 				return 1;
@@ -75,21 +75,17 @@ int menu()
 				evt.button.x >= howtobox.x &&
 				evt.button.x <= (howtobox.x + howtobox.w) &&
 				evt.button.y >= howtobox.y &&
-				evt.button.y <= (howtobox.h + howtobox.y))
-			{
+				evt.button.y <= (howtobox.h + howtobox.y)){
 				int waitresponse = 1;
 				SDL_RenderCopy(renderer, texture2, NULL, NULL);
 				SDL_RenderPresent(renderer);
-				while (waitresponse)
-				{
-					while (SDL_PollEvent(&evt))
-					{
+				while (waitresponse){
+					while (SDL_PollEvent(&evt)){
 						if (evt.type == SDL_MOUSEBUTTONDOWN &&
 							evt.button.x >= backbox.x &&
 							evt.button.x <= (backbox.x + backbox.w) &&
 							evt.button.y >= backbox.y &&
-							evt.button.y <= (backbox.h + backbox.y))
-						{
+							evt.button.y <= (backbox.h + backbox.y)){
 							SDL_RenderCopy(renderer, texture, NULL, NULL);
 							SDL_RenderPresent(renderer);
 							waitresponse = 0;
@@ -101,8 +97,7 @@ int menu()
 				evt.button.x >= quitbox.x &&
 				evt.button.x <= (quitbox.x + quitbox.w) &&
 				evt.button.y >= quitbox.y &&
-				evt.button.y <= (quitbox.h + quitbox.y))
-			{
+				evt.button.y <= (quitbox.h + quitbox.y)){
 				IMG_Quit();
 				SDL_Quit();
 				return 2;

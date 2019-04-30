@@ -61,9 +61,6 @@ SDL_Texture* init_text(GameState *gamestate, SDL_Renderer *renderer)
 	char str5[6] = "lives";
 	sprintf(str, "%s: %s %d %s %d %s %d", str5, str2, gamestate->players[0].lives, str3, gamestate->players[1].lives, str4, gamestate->players[2].lives);
 
-
-
-
 	SDL_Color color = { 255,255,255,255 };
 	SDL_Surface *textSurface = TTF_RenderText_Solid(font, str, color);
 	SDL_Texture *text = SDL_CreateTextureFromSurface(renderer, textSurface);

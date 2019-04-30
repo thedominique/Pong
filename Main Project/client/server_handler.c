@@ -32,7 +32,6 @@ void receive_server_values(UDPpacket *packet_receive, GameState *gamestate, soun
 	gamestate->players[2].w = receive->p[2].w;
 	gamestate->players[2].h = receive->p[2].h;
 
-
 	gamestate->ball.redShade = receive->b1.redShade;
 	gamestate->ball.greenShade = receive->b1.greenShade;
 	gamestate->ball.blueShade = receive->b1.blueShade;
