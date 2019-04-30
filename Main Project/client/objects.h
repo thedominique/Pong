@@ -1,3 +1,4 @@
+#pragma once
 #ifndef objects_h
 #define objects_h
 #include <stdio.h>
@@ -9,16 +10,18 @@
 static const double BALL_SIZE = 20;
 static const double WINDOW_WIDTH = 1280;
 static const double WINDOW_HEIGHT = 720;
-static const double BALL_SPEED = 0.00009;
+static const double BALL_SPEED = 0.0004;
 static const double PADDLE_WIDTH = 20;
 static const double PADDLE_HEIGHT = 100;
 static const double PADDLE_SPEED = 2;
 
-typedef struct{
+typedef struct
+{
 	int w, s, a, d, up, down;
 } Keys;
 
-typedef struct{
+typedef struct
+{
 	int player1Lives, player2Lives, player3Lives;
 	char purple[7];
 	char red[4];
@@ -27,28 +30,36 @@ typedef struct{
 	char msg[32];
 } OldLives;
 
-typedef struct{
+typedef struct
+{
 	double x, y, h, w;
 	int redShade, greenShade, blueShade;
 	int lives;
 	Keys k;
+	SDL_bool gameOver;
+	SDL_bool runBall;
 } Paddle;
 
-typedef struct{
+typedef struct
+{
 	double x, y, h, w, xVel, yVel;
 	int redShade, greenShade, blueShade;
 	int collision;
 } Ball;
 
-typedef struct{
+typedef struct
+{
 	Ball ball;
 	Paddle players[3];
 	int collision;
+	SDL_bool runBall;
 } GameState;
 
-typedef struct{
+typedef struct
+{
 	Ball b1;
 	Paddle p[3];
+	int collision;
 } Receive;
 
 #endif // !objects_h
