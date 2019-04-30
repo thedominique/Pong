@@ -25,7 +25,6 @@ void doRender(SDL_Renderer *renderer, GameState *gamestate, Paddle *mypaddle, SD
 	SDL_Rect player3 = { gamestate->players[2].x, gamestate->players[2].y, gamestate->players[2].w, gamestate->players[2].h };
 	SDL_RenderCopy(renderer, player3Texture, NULL, &player3);
 
-
 	//set the drawing color to white
 	SDL_SetRenderDrawColor(renderer, gamestate->ball.redShade, gamestate->ball.greenShade, gamestate->ball.blueShade, 255);
 	SDL_Rect ball = { gamestate->ball.x, gamestate->ball.y, gamestate->ball.w, gamestate->ball.h };
