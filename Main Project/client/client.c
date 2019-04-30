@@ -21,19 +21,16 @@ int main(int argc, char **argv) {
 	IPaddress ipaddress;
 	UDPpacket *packet_send;
 	UDPpacket *packet_receive;
-
-
+	
 	int choice = menu();
 	if (choice == 2) {
 		return 0;
 	}
 
-
 	GameState gamestate;
 	Paddle mypaddle;
 	OldLives oldLives;
 	initPlayers(&gamestate, &oldLives, &mypaddle);
-
 
 	float NET_TICK_RATE = 60;
 
