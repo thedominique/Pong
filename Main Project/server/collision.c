@@ -221,3 +221,15 @@ void resetState(GameState* gamestate) {
 	gamestate->ball.yVel = BALL_SPEED;
 
 }
+
+void isPlayerOut(GameState* gamestate) {
+	for (int i = 0; i < 3; i++)
+	{
+		if (gamestate->players[i].lives == 0 && gamestate->players[i].gameOver != SDL_TRUE) 
+		{
+			gamestate->players[i].gameOver = SDL_TRUE;
+			gamestate->runnable = SDL_FALSE;
+			printf("Player %d is out\n", i);
+		}
+	}
+}
