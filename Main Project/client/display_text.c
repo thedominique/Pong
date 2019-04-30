@@ -17,8 +17,6 @@ int compare_lives(GameState *gamestate, OldLives *oldlives)
 
 SDL_Texture *update_text(GameState *gamestate, SDL_Renderer *renderer, OldLives *oldLives)
 {
-
-
 	TTF_Font *font = TTF_OpenFont("Arial.ttf", 20);
 	if (!font)
 	{
@@ -64,6 +62,27 @@ SDL_Texture* init_text(GameState *gamestate, SDL_Renderer *renderer)
 	sprintf(str, "%s: %s %d %s %d %s %d", str5, str2, gamestate->players[0].lives, str3, gamestate->players[1].lives, str4, gamestate->players[2].lives);
 
 
+
+
+	SDL_Color color = { 255,255,255,255 };
+	SDL_Surface *textSurface = TTF_RenderText_Solid(font, str, color);
+	SDL_Texture *text = SDL_CreateTextureFromSurface(renderer, textSurface);
+
+	SDL_FreeSurface(textSurface);
+
+	return text;
+}
+
+SDL_Texture* display_next_round(GameState *gamestate, SDL_Renderer *renderer) {
+	TTF_Font *font = TTF_OpenFont("Arial.ttf", 20);
+	if (!font)
+	{
+		printf("TTF open error");
+	}
+	//reset msg =0;
+	char str[32];
+	char display[32] = "Get Ready For The Next Round";
+	sprintf(str, "%s", display);
 
 
 	SDL_Color color = { 255,255,255,255 };
