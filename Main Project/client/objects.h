@@ -37,6 +37,7 @@ typedef struct
 	int lives;
 	Keys k;
 	SDL_bool gameOver;
+	SDL_bool runBall;
 } Paddle;
 
 typedef struct
@@ -51,7 +52,7 @@ typedef struct
 	Ball ball;
 	Paddle players[3];
 	int collision;
-	SDL_bool runnable;
+	SDL_bool runBall;
 } GameState;
 
 typedef struct
@@ -59,7 +60,6 @@ typedef struct
 	Ball b1;
 	Paddle p[3];
 	int collision;
-	SDL_bool runnable;
 } Receive;
 
 #endif // !objects_h

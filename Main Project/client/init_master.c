@@ -12,7 +12,6 @@ void initPlayers(GameState* gamestate, OldLives* oldlives, Paddle *mypaddle) {
 	gamestate->players[0].blueShade = 130;
 	gamestate->players[0].lives = 3;
 
-
 	gamestate->players[1].x = WINDOW_WIDTH - PADDLE_WIDTH;
 	gamestate->players[1].y = WINDOW_HEIGHT / 2;
 	gamestate->players[1].w = PADDLE_WIDTH;
@@ -30,7 +29,6 @@ void initPlayers(GameState* gamestate, OldLives* oldlives, Paddle *mypaddle) {
 	gamestate->players[2].greenShade = 255;
 	gamestate->players[2].blueShade = 11;
 	gamestate->players[2].lives = 3;
-
 
 	gamestate->ball.x = WINDOW_WIDTH / 2;
 	gamestate->ball.y = WINDOW_HEIGHT / 2;
