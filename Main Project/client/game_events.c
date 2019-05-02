@@ -1,7 +1,7 @@
 #include "game_events.h"
-#include <SDL.h>
-#include "display_text.h"
-#include "rendering.h"
+#include <SDL.h>	// lägg den i game_events.h
+#include "display_text.h" // lägg den i game_events.h
+#include "rendering.h"   // lägg den i game_events.h
 
 void request_Next_Round(Paddle* mypaddle) {
 	mypaddle->runBall = SDL_FALSE;
