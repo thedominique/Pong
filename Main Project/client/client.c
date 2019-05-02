@@ -13,6 +13,7 @@
 #include "create_texture.h"
 #include "init_master.h"
 #include "soundeffect.h"
+#include "game_events.h"
 
 int main(int argc, char **argv) {
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -21,7 +22,7 @@ int main(int argc, char **argv) {
 	IPaddress ipaddress;
 	UDPpacket *packet_send;
 	UDPpacket *packet_receive;
-	
+
 	int choice = menu();
 	if (choice == 2) {
 		return 0;
@@ -38,7 +39,7 @@ int main(int argc, char **argv) {
 	client_socket = SDLNet_UDP_Open(2317);
 
 	/* Resolve server name  */
-	SDLNet_ResolveHost(&ipaddress, "130.229.183.221", 1234);
+	SDLNet_ResolveHost(&ipaddress, "localhost", 1234);
 
 	/* Allocate memory for the packet */
 	packet_send = SDLNet_AllocPacket(512);
@@ -74,6 +75,7 @@ int main(int argc, char **argv) {
 
 	int done = 0;
 	int i = 0;
+	int timer = 0;
 	long ticks_per_sec = SDL_GetPerformanceFrequency();
 	long tick_t0 = SDL_GetPerformanceCounter();
 	long next_net_tick = tick_t0;
@@ -86,24 +88,40 @@ int main(int argc, char **argv) {
 		if (SDLNet_UDP_Recv(client_socket, packet_receive)) {
 			Receive *receive = (Receive *)packet_receive->data;
 			//printf("RECEIVED: %lf\n", receive->b1.x);
-			//printf("gamestate player[0].x: %lf\n", gamestate.players[0].x);
+			//printf("gamestate player[0].x: %lf\n", gamestate.players[0].x)
 			receive_server_values(packet_receive, &gamestate, &soundeffect);
+		
 		}
+
+		// Kollar om spelaren är ute
+		isPlayerOut(&gamestate, &mypaddle);
 
 		//update texten OM det har skett någon skillnad
-		if (compare_lives(&gamestate, &oldLives)) {
-			printf("YES");
-
-			text = update_text(&gamestate, renderer, &oldLives);
-
+		if (compare_lives(&gamestate, &oldLives)) 
+		{
+			if (mypaddle.runBall == SDL_FALSE)
+			{
+				text = display_next_round(&gamestate, renderer);
+				if (timer == 100)
+				{
+					mypaddle.runBall = SDL_TRUE;
+					timer = 0;
+				}
+				else {
+					timer++;
+				}
+			}
+			else {
+				text = update_text(&gamestate, renderer, &oldLives);
+			}
 		}
-
 		//Render display
 		doRender(renderer, &gamestate, &mypaddle, board, text, player1Texture, player2Texture, player3Texture);
 
 		done = processEvents(window, &mypaddle, dt, &gamestate);
+
 		if (tick_t1 >= next_net_tick) {
-			for (i = 0; i < 4; i++) {
+			for (i = 0; i < 3; i++) {
 				packet_send->data = (void*)&mypaddle;
 				packet_send->channel = -1;
 				packet_send->len = sizeof(mypaddle);
