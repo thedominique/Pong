@@ -21,7 +21,11 @@ int main(int argc, char **argv) {
 	IPaddress ipaddress;
 	UDPpacket *packet_send;
 	UDPpacket *packet_receive;
+	char serveraddress[15];
 	
+	printf("Enter server ip\n");
+	fgets(serveraddress, 15, stdin);
+
 	int choice = menu();
 	if (choice == 2) {
 		return 0;
@@ -38,7 +42,7 @@ int main(int argc, char **argv) {
 	client_socket = SDLNet_UDP_Open(2317);
 
 	/* Resolve server name  */
-	SDLNet_ResolveHost(&ipaddress, "130.229.183.221", 1234);
+	SDLNet_ResolveHost(&ipaddress, serveraddress, 1234);
 
 	/* Allocate memory for the packet */
 	packet_send = SDLNet_AllocPacket(512);
