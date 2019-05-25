@@ -9,10 +9,7 @@
 #include "objects.h"
 #include "player_handler.h"
 
-
-
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv){
 	int i = 0;
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDLNet_Init(SDL_INIT_EVERYTHING);
@@ -63,13 +60,10 @@ int main(int argc, char **argv)
 	gamestate.ball.greenShade = 0;
 	gamestate.ball.blueShade = 130;
 
-	for (i = 0; i < 3; i++)
-	{
+	for (i = 0; i < 3; i++){
 		gamestate.keys[i].up = 0;
 		gamestate.keys[i].down = 0;
 	}
-
-	float NET_TICK_RATE = 50;
 
 	init_array_struct(client_ipaddress);
 	printf("%d %d\n", client_ipaddress[3].host, client_ipaddress[3].port);
@@ -82,72 +76,50 @@ int main(int argc, char **argv)
 
 	packet_send = SDLNet_AllocPacket(512);
 	packet_receive = SDLNet_AllocPacket(512);
-	//packet_send->len = strlen((char *)packet_send->data) + 1;
-	//packet_receive->len = strlen((char *)packet_receive->data) + 1;
 
+	float NET_TICK_RATE = 50;
 	long ticks_per_sec = SDL_GetPerformanceFrequency();
 	long tick_t0 = SDL_GetPerformanceCounter();
 	long next_net_tick = tick_t0;
 	long net_tick_interval = (1 / NET_TICK_RATE) * ticks_per_sec;
 
-
-	while (1)
-	{
+	while (1){
 		long tick_t1 = SDL_GetPerformanceCounter();
 		double dt = (tick_t1 - tick_t0) / (double)ticks_per_sec;
 
 
-		if (SDLNet_UDP_Recv(server_socket, packet_receive))
-		{
-			//Paddle* receive = (Paddle*)packet_receive->data;
-			//printf("RE: %lf \n", receive->x);
+		if (SDLNet_UDP_Recv(server_socket, packet_receive)){
 			check_ipaddress(packet_receive, client_ipaddress, &gamestate);
 			identify_player(packet_receive, client_ipaddress, &gamestate);
 
 		}
-		//printf("TRIED TO SEND ball x: %lf\n", gamestate.ball.x);
-		//printf("Lives player 0: %d\n", gamestate.players[0].lives);
-		//printf("gamestate player[0].x: %lf\n", gamestate.players[0].x);
 
 		//HANTERAR COLLISION OCH KEY PRESSES
 		key_handler(&gamestate);
 
-
 		detect_collision(&gamestate);
 
-		if (tick_t1 >= next_net_tick)
-		{
-			for (i = 0; i < 4; i++)
-			{
+		if (tick_t1 >= next_net_tick){
+			for (i = 0; i < 4; i++){
 				//key_handler(&gamestate);
-				if (client_ipaddress[i].port != 0)
-				{
+				if (client_ipaddress[i].port != 0){
 
 					packet_send->data = (void*)&gamestate;
 					packet_send->channel = -1;
 					packet_send->len = sizeof(gamestate);
 					packet_send->maxlen = packet_send->len + 20;
 
-
 					packet_send->address.host = client_ipaddress[i].host;
 					packet_send->address.port = client_ipaddress[i].port;
 
-
-					if (SDLNet_UDP_Send(server_socket, -1, packet_send) == 0)
-					{
+					if (SDLNet_UDP_Send(server_socket, -1, packet_send) == 0){
 						printf("failed to send from server/n");
 					}
 					gamestate.ball.collision = 0;
-
 				}
-
 			}
 			next_net_tick += net_tick_interval;
-
 		}
-
-
-
 	}
 
 	SDLNet_FreePacket(packet_send);
