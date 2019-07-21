@@ -8,11 +8,10 @@
 #include "SDL.h"
 #include <stdbool.h>
 
-
 static const double BALL_SIZE = 20;
 static const double WINDOW_WIDTH = 1280;
 static const double WINDOW_HEIGHT = 720;
-static const double BALL_SPEED = 0.00004;
+static const double BALL_SPEED = 0.0002;
 static const double PADDLE_WIDTH = 20;
 static const double PADDLE_HEIGHT = 100;
 static const double PADDLE_SPEED = 2;
@@ -28,16 +27,15 @@ typedef struct
 	int w, s, a, d, up, down;
 } Keys;
 
-
 typedef struct
 {
 	double x, y, h, w;
 	int redShade, greenShade, blueShade;
 	int lives;
 	Keys k;
+	SDL_bool gameOver;
+	SDL_bool runBall;
 } Paddle;
-
-
 
 typedef struct
 {
@@ -46,14 +44,13 @@ typedef struct
 	int collision;
 } Ball;
 
-
-
 typedef struct
 {
 	Ball ball;
 	Paddle players[3];
 	int playerCounter;
 	Keys keys[3];
+	SDL_bool runBall;
 } GameState;
 
 typedef struct
